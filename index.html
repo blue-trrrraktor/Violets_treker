@@ -209,18 +209,18 @@
     .tools {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 24px;
+      gap: 8px;
+      margin-bottom: 20px;
       justify-content: center;
     }
     .tools button {
       background: #e7d4e7;
       border: none;
-      padding: 12px 24px;
+      padding: 10px 18px;
       border-radius: 40px;
       font-family: 'Quicksand', sans-serif;
       font-weight: 600;
-      font-size: 1rem;
+      font-size: 0.9rem;
       color: #4a2a4a;
       cursor: pointer;
       transition: background 0.2s;
@@ -234,8 +234,10 @@
       font-size: 0.85rem;
       color: #7a5a7a;
       margin-bottom: 12px;
-      opacity: 0.7;
+      opacity: 0.8;
     }
+    .sync-status .error { color: #c0392b; }
+    .sync-status .success { color: #27ae60; }
     @media (max-width: 600px) {
       body { padding: 12px 8px; font-size: 15px; }
       .section { padding: 14px 12px; }
@@ -263,11 +265,13 @@
 <div class="container">
   <h1>🌸 Трекер фиалок</h1>
 
-  <div class="sync-status" id="sync-status">Синхронизация с облаком: <span id="sync-text">включена</span></div>
+  <div class="sync-status" id="sync-status">Синхронизация: <span id="sync-text">инициализация...</span></div>
 
   <div class="tools">
     <button id="export-btn">📤 Экспорт</button>
     <button id="import-btn">📥 Импорт</button>
+    <button id="sync-pull-btn">⬇️ Загрузить из облака</button>
+    <button id="sync-push-btn">⬆️ Сохранить в облако</button>
     <input type="file" id="file-input" accept=".json">
   </div>
 
@@ -327,7 +331,7 @@
 
 <script>
   (function() {
-    // ========== ВСТАВЬТЕ СВОЮ КОНФИГУРАЦИЮ FIREBASE ==========
+    // ========== ВСТАВЬТЕ ВАШУ КОНФИГУРАЦИЮ FIREBASE ==========
     const firebaseConfig = {
       apiKey: "AIzaSyA5MMiGc44Ey1ANK-JlQ1lQlBHeCB3AayY",
       authDomain: "violet-tracker.firebaseapp.com",
@@ -339,22 +343,21 @@
     };
     // =========================================================
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const auth = firebase.auth();
+    // Инициализируем Firebase только если есть конфигурация (проверяем наличие ключа)
+    let db, auth;
+    let firebaseReady = false;
+    if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "AIzaSy...") {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore();
+      auth = firebase.auth();
+      firebaseReady = true;
+    } else {
+      console.warn('Firebase не настроен. Работаем только локально.');
+    }
 
-    // Фиксированный ID документа – чтобы все браузеры писали в одно место
-    const DOCUMENT_ID = 'violet_tracker_data';
-
-    auth.signInAnonymously().catch(err => {
-      console.warn('Ошибка анонимного входа:', err);
-      document.getElementById('sync-text').textContent = 'ошибка, используйте экспорт/импорт';
-    });
-
-    let data = loadLocalData();
-
-    // ========== Локальное хранилище ==========
+    // ======== Объявления ========
     const STORAGE_KEY = 'violet_tracker_data';
+    const DOCUMENT_ID = 'violet_tracker_data';
     const DEFAULT_DATA = {
       sorts: [],
       info: [],
@@ -370,6 +373,14 @@
         { id: 7, tags: '#фиалкакрасоты #нежностьвдеталях #волшебствоприроды #чувствопрекрасного #очарованиецветов', lastUsed: '' }
       ]
     };
+
+    let data = loadLocalData();
+    let syncStatusEl = document.getElementById('sync-text');
+
+    function setSyncStatus(text, className = '') {
+      syncStatusEl.textContent = text;
+      syncStatusEl.className = className;
+    }
 
     function loadLocalData() {
       const stored = localStorage.getItem(STORAGE_KEY);
@@ -396,7 +407,16 @@
       textarea.style.height = textarea.scrollHeight + 'px';
     }
 
-    // ========== Рендеринг ==========
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function generateId() {
+      return Date.now() + Math.random().toString(36).substr(2, 6);
+    }
+
+    // ======== Рендеринг ========
     function renderSorts() {
       const container = document.getElementById('sort-list');
       if (data.sorts.length === 0) {
@@ -581,20 +601,9 @@
       renderQA();
       renderHashtags();
       saveLocalData();
-      // Сохраняем в Firestore, если аутентификация выполнена
-      if (auth.currentUser) saveToFirestore();
     }
 
-    function escapeHtml(str) {
-      if (!str) return '';
-      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    }
-
-    function generateId() {
-      return Date.now() + Math.random().toString(36).substr(2, 6);
-    }
-
-    // ========== Синхронизация с DOM ==========
+    // ======== Синхронизация с DOM ========
     function syncAllFromDOM() {
       document.querySelectorAll('#sort-list .entry-row').forEach(row => {
         const id = row.dataset.id;
@@ -637,47 +646,79 @@
       saveLocalData();
     }
 
-    // ========== Firebase – фиксированный документ ==========
+    // ======== Работа с Firestore (только если Firebase настроен) ========
     function saveToFirestore() {
-      if (!auth.currentUser) return;
-      db.collection('users_data').doc(DOCUMENT_ID).set({
+      if (!firebaseReady || !auth || !auth.currentUser) {
+        setSyncStatus('не авторизован', 'error');
+        return Promise.reject('No firebase');
+      }
+      syncAllFromDOM();
+      return db.collection('users_data').doc(DOCUMENT_ID).set({
         data: data,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      }).catch(err => console.warn('Ошибка сохранения в Firestore:', err));
-    }
-
-    function loadFromFirestore() {
-      if (!auth.currentUser) return;
-      db.collection('users_data').doc(DOCUMENT_ID).get().then(doc => {
-        if (doc.exists) {
-          const remoteData = doc.data().data;
-          if (remoteData) {
-            data = remoteData;
-            saveLocalData();
-            renderAll();
-            document.getElementById('sync-text').textContent = 'синхронизировано';
-          }
-        } else {
-          // Если документа нет – создадим при первом сохранении
-          saveToFirestore();
-          document.getElementById('sync-text').textContent = 'готово к синхронизации';
-        }
-      }).catch(err => {
-        console.warn('Ошибка загрузки из Firestore:', err);
-        document.getElementById('sync-text').textContent = 'ошибка загрузки, работаем локально';
+      })
+      .then(() => {
+        setSyncStatus('сохранено в облако ✅', 'success');
+      })
+      .catch(err => {
+        console.warn('Ошибка сохранения в Firestore:', err);
+        setSyncStatus('ошибка сохранения: ' + err.message, 'error');
+        throw err;
       });
     }
 
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        document.getElementById('sync-text').textContent = 'авторизован, загружаем...';
-        loadFromFirestore();
-      } else {
-        document.getElementById('sync-text').textContent = 'не авторизован';
+    function loadFromFirestore() {
+      if (!firebaseReady || !auth || !auth.currentUser) {
+        setSyncStatus('не авторизован', 'error');
+        return Promise.reject('No firebase');
       }
-    });
+      setSyncStatus('загрузка...', '');
+      return db.collection('users_data').doc(DOCUMENT_ID).get()
+        .then(doc => {
+          if (doc.exists) {
+            const remoteData = doc.data().data;
+            if (remoteData) {
+              data = remoteData;
+              saveLocalData();
+              renderAll();
+              setSyncStatus('синхронизировано ✅', 'success');
+            } else {
+              setSyncStatus('данные в облаке пусты', '');
+            }
+          } else {
+            setSyncStatus('документ не найден, создаём...', '');
+            return saveToFirestore().then(() => {
+              setSyncStatus('документ создан ✅', 'success');
+            });
+          }
+        })
+        .catch(err => {
+          console.warn('Ошибка загрузки из Firestore:', err);
+          setSyncStatus('ошибка загрузки: ' + err.message, 'error');
+          throw err;
+        });
+    }
 
-    // ========== Обработчики событий ==========
+    // ======== Аутентификация ========
+    if (firebaseReady) {
+      auth.signInAnonymously().catch(err => {
+        console.warn('Ошибка анонимного входа:', err);
+        setSyncStatus('ошибка авторизации: ' + err.message, 'error');
+      });
+
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          setSyncStatus('авторизован, загрузка...', '');
+          loadFromFirestore().catch(() => {});
+        } else {
+          setSyncStatus('не авторизован', 'error');
+        }
+      });
+    } else {
+      setSyncStatus('Firebase не настроен, работаем локально', '');
+    }
+
+    // ======== Обработчики событий DOM ========
     function handleInputChange(e) {
       const target = e.target;
       const row = target.closest('.entry-row');
@@ -692,7 +733,9 @@
       if (field === 'name' || field === 'description' || field === 'format' || field === 'date' || field === 'published') {
         item[field] = value;
         saveLocalData();
-        if (auth.currentUser) saveToFirestore();
+        if (firebaseReady && auth && auth.currentUser) {
+          saveToFirestore().catch(() => {});
+        }
       }
       if (target.tagName === 'TEXTAREA') {
         autoGrow(target);
@@ -710,6 +753,9 @@
       if (data[type]) {
         data[type] = data[type].filter(el => el.id !== id);
         renderAll();
+        if (firebaseReady && auth && auth.currentUser) {
+          saveToFirestore().catch(() => {});
+        }
       }
     }
 
@@ -721,34 +767,40 @@
         if (set) {
           set.lastUsed = target.value;
           saveLocalData();
-          if (auth.currentUser) saveToFirestore();
+          if (firebaseReady && auth && auth.currentUser) {
+            saveToFirestore().catch(() => {});
+          }
         }
       }
     }
 
-    // ========== Добавление ==========
+    // ======== Добавление ========
     function addSort() {
       syncAllFromDOM();
       data.sorts.push({ id: generateId(), name: '', format: '', date: '', published: false });
       renderAll();
+      if (firebaseReady && auth && auth.currentUser) saveToFirestore().catch(() => {});
     }
     function addInfo() {
       syncAllFromDOM();
       data.info.push({ id: generateId(), name: '', description: '', date: '', published: false });
       renderAll();
+      if (firebaseReady && auth && auth.currentUser) saveToFirestore().catch(() => {});
     }
     function addAesthetic() {
       syncAllFromDOM();
       data.aesthetic.push({ id: generateId(), name: '', description: '', format: '', date: '', published: false });
       renderAll();
+      if (firebaseReady && auth && auth.currentUser) saveToFirestore().catch(() => {});
     }
     function addQA() {
       syncAllFromDOM();
       data.qa.push({ id: generateId(), name: '', description: '', format: '', date: '', published: false });
       renderAll();
+      if (firebaseReady && auth && auth.currentUser) saveToFirestore().catch(() => {});
     }
 
-    // ========== Экспорт/Импорт ==========
+    // ======== Экспорт/Импорт ========
     function exportData() {
       syncAllFromDOM();
       const json = JSON.stringify(data, null, 2);
@@ -775,6 +827,7 @@
           if (confirm('Импорт заменит все текущие данные. Продолжить?')) {
             data = imported;
             renderAll();
+            if (firebaseReady && auth && auth.currentUser) saveToFirestore().catch(() => {});
             alert('Данные успешно импортированы!');
           }
         } catch(err) {
@@ -784,7 +837,23 @@
       reader.readAsText(file);
     }
 
-    // ========== Инициализация ==========
+    // ======== Ручная синхронизация ========
+    document.getElementById('sync-pull-btn').addEventListener('click', function() {
+      if (firebaseReady && auth && auth.currentUser) {
+        loadFromFirestore().catch(() => {});
+      } else {
+        setSyncStatus('не авторизован или Firebase не настроен', 'error');
+      }
+    });
+    document.getElementById('sync-push-btn').addEventListener('click', function() {
+      if (firebaseReady && auth && auth.currentUser) {
+        saveToFirestore().catch(() => {});
+      } else {
+        setSyncStatus('не авторизован или Firebase не настроен', 'error');
+      }
+    });
+
+    // ======== Инициализация ========
     document.addEventListener('DOMContentLoaded', function() {
       renderAll();
 
