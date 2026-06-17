@@ -107,7 +107,7 @@
     .entry-row {
       display: flex;
       flex-wrap: wrap;
-      align-items: center;
+      align-items: flex-start;
       gap: 12px 18px;
       background: rgba(255, 252, 255, 0.6);
       padding: 12px 18px;
@@ -125,6 +125,7 @@
       align-items: center;
       gap: 6px;
       flex-wrap: wrap;
+      flex: 1 1 auto;
     }
 
     .entry-row label {
@@ -133,9 +134,10 @@
       color: #6a4a6a;
       opacity: 0.8;
       letter-spacing: 0.3px;
+      white-space: nowrap;
     }
 
-    .entry-row input[type="text"],
+    .entry-row textarea,
     .entry-row input[type="date"],
     .entry-row select {
       font-family: 'Quicksand', sans-serif;
@@ -148,6 +150,17 @@
       outline: none;
       transition: border 0.2s;
       min-width: 100px;
+      resize: none;
+      overflow: hidden;
+      line-height: 1.4;
+    }
+
+    .entry-row textarea {
+      flex: 1 1 200px;
+      min-width: 140px;
+      border-radius: 18px;
+      padding: 8px 14px;
+      min-height: 40px;
     }
 
     .entry-row select,
@@ -155,16 +168,11 @@
       color: #3a2a3a;
     }
 
-    .entry-row input[type="text"]:focus,
+    .entry-row textarea:focus,
     .entry-row input[type="date"]:focus,
     .entry-row select:focus {
       border-color: #b89ab8;
       box-shadow: 0 0 0 3px rgba(180, 140, 180, 0.15);
-    }
-
-    .entry-row input[type="text"] {
-      flex: 1 1 140px;
-      min-width: 120px;
     }
 
     .entry-row input[type="date"] {
@@ -198,21 +206,12 @@
       padding: 0 6px;
       transition: color 0.2s, transform 0.1s;
       line-height: 1;
+      align-self: center;
     }
 
     .entry-row .delete-btn:hover {
       color: #b06080;
       transform: scale(1.2);
-    }
-
-    .entry-row .sort-name {
-      font-weight: 500;
-      color: #4a3a4a;
-    }
-
-    .entry-row .desc-input {
-      flex: 2 1 200px;
-      min-width: 160px;
     }
 
     .hashtag-set {
@@ -282,7 +281,7 @@
       .entry-row .field {
         flex-wrap: wrap;
       }
-      .entry-row input[type="text"],
+      .entry-row textarea,
       .entry-row input[type="date"],
       .entry-row select {
         width: 100%;
@@ -416,6 +415,12 @@
       return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
+    // Авто-расширение textarea
+    function autoGrow(textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    }
+
     // Синхронизация данных из DOM (используется при добавлении)
     function syncAllFromDOM() {
       // Сорта
@@ -423,9 +428,9 @@
         const id = row.dataset.id;
         const item = data.sorts.find(el => el.id === id);
         if (!item) return;
-        item.name = row.querySelector('.sort-name')?.value || '';
-        item.format = row.querySelector('select[data-field="format"]')?.value || 'Публикация';
-        item.date = row.querySelector('input[type="date"]')?.value || '';
+        item.name = row.querySelector('textarea[data-field="name"]')?.value || '';
+        item.format = row.querySelector('select[data-field="format"]')?.value || '';
+        item.date = row.querySelector('input[data-field="date"]')?.value || '';
         item.published = row.querySelector('input[data-field="published"]')?.checked || false;
       });
       // Информативные
@@ -433,9 +438,9 @@
         const id = row.dataset.id;
         const item = data.info.find(el => el.id === id);
         if (!item) return;
-        item.name = row.querySelector('input[data-field="name"]')?.value || '';
-        item.description = row.querySelector('input[data-field="description"]')?.value || '';
-        item.date = row.querySelector('input[type="date"]')?.value || '';
+        item.name = row.querySelector('textarea[data-field="name"]')?.value || '';
+        item.description = row.querySelector('textarea[data-field="description"]')?.value || '';
+        item.date = row.querySelector('input[data-field="date"]')?.value || '';
         item.published = row.querySelector('input[data-field="published"]')?.checked || false;
       });
       // Эстетичный
@@ -443,10 +448,10 @@
         const id = row.dataset.id;
         const item = data.aesthetic.find(el => el.id === id);
         if (!item) return;
-        item.name = row.querySelector('input[data-field="name"]')?.value || '';
-        item.description = row.querySelector('input[data-field="description"]')?.value || '';
-        item.format = row.querySelector('select[data-field="format"]')?.value || 'Публикация';
-        item.date = row.querySelector('input[type="date"]')?.value || '';
+        item.name = row.querySelector('textarea[data-field="name"]')?.value || '';
+        item.description = row.querySelector('textarea[data-field="description"]')?.value || '';
+        item.format = row.querySelector('select[data-field="format"]')?.value || '';
+        item.date = row.querySelector('input[data-field="date"]')?.value || '';
         item.published = row.querySelector('input[data-field="published"]')?.checked || false;
       });
       // QA
@@ -454,10 +459,10 @@
         const id = row.dataset.id;
         const item = data.qa.find(el => el.id === id);
         if (!item) return;
-        item.name = row.querySelector('input[data-field="name"]')?.value || '';
-        item.description = row.querySelector('input[data-field="description"]')?.value || '';
-        item.format = row.querySelector('select[data-field="format"]')?.value || 'Публикация';
-        item.date = row.querySelector('input[type="date"]')?.value || '';
+        item.name = row.querySelector('textarea[data-field="name"]')?.value || '';
+        item.description = row.querySelector('textarea[data-field="description"]')?.value || '';
+        item.format = row.querySelector('select[data-field="format"]')?.value || '';
+        item.date = row.querySelector('input[data-field="date"]')?.value || '';
         item.published = row.querySelector('input[data-field="published"]')?.checked || false;
       });
       saveData();
@@ -475,11 +480,12 @@
         html += `
           <div class="entry-row" data-id="${item.id}" data-type="sorts">
             <div class="field">
-              <input type="text" class="sort-name" value="${escapeHtml(item.name)}" placeholder="Название сорта" data-field="name">
+              <textarea data-field="name" placeholder="Название сорта" rows="1">${escapeHtml(item.name)}</textarea>
             </div>
             <div class="field">
               <label>Формат</label>
               <select data-field="format">
+                <option value="" ${!item.format ? 'selected' : ''} disabled hidden>Выберите</option>
                 <option value="Публикация" ${item.format === 'Публикация' ? 'selected' : ''}>Публикация</option>
                 <option value="Карусель" ${item.format === 'Карусель' ? 'selected' : ''}>Карусель</option>
                 <option value="Reals" ${item.format === 'Reals' ? 'selected' : ''}>Reals</option>
@@ -498,6 +504,8 @@
         `;
       });
       container.innerHTML = html;
+      // авто-рост для textarea
+      container.querySelectorAll('textarea').forEach(t => autoGrow(t));
     }
 
     function renderInfo() {
@@ -511,10 +519,10 @@
         html += `
           <div class="entry-row" data-id="${item.id}" data-type="info">
             <div class="field">
-              <input type="text" value="${escapeHtml(item.name)}" placeholder="Название" data-field="name">
+              <textarea data-field="name" placeholder="Название" rows="1">${escapeHtml(item.name)}</textarea>
             </div>
             <div class="field">
-              <input type="text" value="${escapeHtml(item.description)}" placeholder="Краткое описание" data-field="description" class="desc-input">
+              <textarea data-field="description" placeholder="Краткое описание" rows="1" class="desc-input">${escapeHtml(item.description)}</textarea>
             </div>
             <div class="field">
               <label>Дата</label>
@@ -529,6 +537,7 @@
         `;
       });
       container.innerHTML = html;
+      container.querySelectorAll('textarea').forEach(t => autoGrow(t));
     }
 
     function renderAesthetic() {
@@ -542,14 +551,15 @@
         html += `
           <div class="entry-row" data-id="${item.id}" data-type="aesthetic">
             <div class="field">
-              <input type="text" value="${escapeHtml(item.name)}" placeholder="Название" data-field="name">
+              <textarea data-field="name" placeholder="Название" rows="1">${escapeHtml(item.name)}</textarea>
             </div>
             <div class="field">
-              <input type="text" value="${escapeHtml(item.description)}" placeholder="Краткое описание" data-field="description" class="desc-input">
+              <textarea data-field="description" placeholder="Краткое описание" rows="1" class="desc-input">${escapeHtml(item.description)}</textarea>
             </div>
             <div class="field">
               <label>Формат</label>
               <select data-field="format">
+                <option value="" ${!item.format ? 'selected' : ''} disabled hidden>Выберите</option>
                 <option value="Публикация" ${item.format === 'Публикация' ? 'selected' : ''}>Публикация</option>
                 <option value="Карусель" ${item.format === 'Карусель' ? 'selected' : ''}>Карусель</option>
                 <option value="Reals" ${item.format === 'Reals' ? 'selected' : ''}>Reals</option>
@@ -568,6 +578,7 @@
         `;
       });
       container.innerHTML = html;
+      container.querySelectorAll('textarea').forEach(t => autoGrow(t));
     }
 
     function renderQA() {
@@ -581,14 +592,15 @@
         html += `
           <div class="entry-row" data-id="${item.id}" data-type="qa">
             <div class="field">
-              <input type="text" value="${escapeHtml(item.name)}" placeholder="Название" data-field="name">
+              <textarea data-field="name" placeholder="Название" rows="1">${escapeHtml(item.name)}</textarea>
             </div>
             <div class="field">
-              <input type="text" value="${escapeHtml(item.description)}" placeholder="Краткое описание" data-field="description" class="desc-input">
+              <textarea data-field="description" placeholder="Краткое описание" rows="1" class="desc-input">${escapeHtml(item.description)}</textarea>
             </div>
             <div class="field">
               <label>Формат</label>
               <select data-field="format">
+                <option value="" ${!item.format ? 'selected' : ''} disabled hidden>Выберите</option>
                 <option value="Публикация" ${item.format === 'Публикация' ? 'selected' : ''}>Публикация</option>
                 <option value="Карусель" ${item.format === 'Карусель' ? 'selected' : ''}>Карусель</option>
                 <option value="Reals" ${item.format === 'Reals' ? 'selected' : ''}>Reals</option>
@@ -607,6 +619,7 @@
         `;
       });
       container.innerHTML = html;
+      container.querySelectorAll('textarea').forEach(t => autoGrow(t));
     }
 
     function renderHashtags() {
@@ -651,6 +664,10 @@
         item[field] = value;
         saveData();
       }
+      // авто-рост для textarea
+      if (target.tagName === 'TEXTAREA') {
+        autoGrow(target);
+      }
     }
 
     function handleDelete(e) {
@@ -686,8 +703,8 @@
       data.sorts.push({
         id: generateId(),
         name: '',
-        format: 'Публикация',
-        date: '',
+        format: '',   // пусто
+        date: '',     // пусто
         published: false
       });
       renderAll();
@@ -711,7 +728,7 @@
         id: generateId(),
         name: '',
         description: '',
-        format: 'Публикация',
+        format: '',
         date: '',
         published: false
       });
@@ -724,7 +741,7 @@
         id: generateId(),
         name: '',
         description: '',
-        format: 'Публикация',
+        format: '',
         date: '',
         published: false
       });
