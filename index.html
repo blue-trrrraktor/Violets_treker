@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
   <title>Трекер фиалок 🌸</title>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -16,20 +16,21 @@
       font-family: 'Quicksand', sans-serif;
       background: #f8f0f5;
       color: #4a3a4a;
-      padding: 30px 20px;
+      padding: 16px 12px;
+      font-size: 16px;
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 800px;
       margin: 0 auto;
     }
 
     h1 {
       text-align: center;
       font-weight: 600;
-      font-size: 2.2rem;
+      font-size: 1.8rem;
       color: #7a5a7a;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
       letter-spacing: 1px;
       text-shadow: 2px 2px 8px rgba(180, 140, 180, 0.15);
     }
@@ -38,39 +39,35 @@
       background: rgba(255, 245, 250, 0.7);
       backdrop-filter: blur(2px);
       border-radius: 24px;
-      padding: 25px 30px;
-      margin-bottom: 30px;
+      padding: 18px 16px;
+      margin-bottom: 24px;
       box-shadow: 0 8px 25px rgba(160, 120, 160, 0.10);
       border: 1px solid rgba(220, 190, 220, 0.25);
-      transition: box-shadow 0.2s;
-    }
-
-    .section:hover {
-      box-shadow: 0 12px 35px rgba(160, 120, 160, 0.15);
     }
 
     .section-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       flex-wrap: wrap;
+      gap: 10px;
     }
 
     .section-title {
       font-weight: 600;
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       color: #6a4a6a;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .section-title span {
       background: #e7d4e7;
-      padding: 4px 12px;
+      padding: 2px 10px;
       border-radius: 40px;
-      font-size: 0.8rem;
+      font-size: 0.7rem;
       font-weight: 500;
       color: #5a3a5a;
     }
@@ -78,24 +75,20 @@
     .add-btn {
       background: #d9c4d9;
       border: none;
-      padding: 10px 22px;
+      padding: 10px 18px;
       border-radius: 40px;
       font-family: 'Quicksand', sans-serif;
       font-weight: 600;
-      font-size: 0.95rem;
+      font-size: 1rem;
       color: #4a2a4a;
       cursor: pointer;
       transition: background 0.2s, transform 0.1s;
       box-shadow: 0 4px 10px rgba(180, 140, 180, 0.15);
-    }
-
-    .add-btn:hover {
-      background: #d0b8d0;
-      transform: scale(1.02);
+      touch-action: manipulation;
     }
 
     .add-btn:active {
-      transform: scale(0.98);
+      transform: scale(0.96);
     }
 
     .entry-list {
@@ -106,26 +99,31 @@
 
     .entry-row {
       display: flex;
-      flex-wrap: wrap;
-      align-items: flex-start;
-      gap: 12px 18px;
+      flex-direction: column;
+      gap: 10px;
       background: rgba(255, 252, 255, 0.6);
-      padding: 12px 18px;
+      padding: 14px 14px;
       border-radius: 18px;
       border: 1px solid rgba(210, 180, 210, 0.2);
-      transition: background 0.2s;
-    }
-
-    .entry-row:hover {
-      background: rgba(255, 248, 255, 0.8);
     }
 
     .entry-row .field {
       display: flex;
-      align-items: center;
-      gap: 6px;
+      flex-direction: column;
+      gap: 4px;
+      width: 100%;
+    }
+
+    .entry-row .field-row {
+      display: flex;
       flex-wrap: wrap;
-      flex: 1 1 auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .entry-row .field-row .field {
+      flex: 1 1 140px;
+      min-width: 120px;
     }
 
     .entry-row label {
@@ -134,33 +132,39 @@
       color: #6a4a6a;
       opacity: 0.8;
       letter-spacing: 0.3px;
-      white-space: nowrap;
     }
 
     .entry-row textarea,
     .entry-row input[type="date"],
     .entry-row select {
       font-family: 'Quicksand', sans-serif;
-      padding: 6px 12px;
+      padding: 10px 14px;
       border-radius: 30px;
       border: 1px solid #d8c4d8;
       background: white;
-      font-size: 0.9rem;
+      font-size: 1rem;
       color: #3a2a3a;
       outline: none;
       transition: border 0.2s;
-      min-width: 100px;
+      width: 100%;
+      min-height: 44px;
       resize: none;
       overflow: hidden;
       line-height: 1.4;
+      -webkit-appearance: none;
+      appearance: none;
     }
 
     .entry-row textarea {
-      flex: 1 1 200px;
-      min-width: 140px;
       border-radius: 18px;
-      padding: 8px 14px;
-      min-height: 40px;
+      min-height: 44px;
+    }
+
+    .entry-row select {
+      padding-right: 30px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236a4a6a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
     }
 
     .entry-row select,
@@ -175,24 +179,17 @@
       box-shadow: 0 0 0 3px rgba(180, 140, 180, 0.15);
     }
 
-    .entry-row input[type="date"] {
-      min-width: 140px;
-    }
-
-    .entry-row select {
-      min-width: 110px;
-    }
-
     .entry-row .checkbox-field {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
       cursor: pointer;
+      padding: 6px 0;
     }
 
     .entry-row .checkbox-field input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
+      width: 22px;
+      height: 22px;
       accent-color: #b89ab8;
       cursor: pointer;
     }
@@ -200,41 +197,41 @@
     .entry-row .delete-btn {
       background: none;
       border: none;
-      font-size: 1.2rem;
+      font-size: 1.6rem;
       color: #b08ab0;
       cursor: pointer;
-      padding: 0 6px;
+      padding: 4px 10px;
       transition: color 0.2s, transform 0.1s;
       line-height: 1;
-      align-self: center;
+      align-self: flex-end;
+      touch-action: manipulation;
     }
 
-    .entry-row .delete-btn:hover {
-      color: #b06080;
+    .entry-row .delete-btn:active {
       transform: scale(1.2);
     }
 
     .hashtag-set {
       display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 10px 20px;
+      flex-direction: column;
+      gap: 10px;
       background: rgba(255, 252, 255, 0.6);
-      padding: 12px 18px;
+      padding: 14px 14px;
       border-radius: 18px;
       border: 1px solid rgba(210, 180, 210, 0.2);
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .hashtag-set .tags {
-      flex: 1 1 300px;
       font-size: 0.9rem;
       color: #4a3a4a;
       word-break: break-word;
+      line-height: 1.5;
     }
 
     .hashtag-set .date-field {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       gap: 8px;
     }
@@ -247,14 +244,15 @@
 
     .hashtag-set input[type="date"] {
       font-family: 'Quicksand', sans-serif;
-      padding: 6px 12px;
+      padding: 10px 14px;
       border-radius: 30px;
       border: 1px solid #d8c4d8;
       background: white;
-      font-size: 0.9rem;
+      font-size: 1rem;
       color: #3a2a3a;
       outline: none;
-      min-width: 140px;
+      width: 100%;
+      min-height: 44px;
     }
 
     .hashtag-set input[type="date"]:focus {
@@ -269,35 +267,74 @@
       font-size: 0.95rem;
     }
 
-    @media (max-width: 700px) {
+    /* Кнопки экспорта/импорта */
+    .tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 24px;
+      justify-content: center;
+    }
+
+    .tools button {
+      background: #e7d4e7;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 40px;
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #4a2a4a;
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 4px 10px rgba(180, 140, 180, 0.10);
+      touch-action: manipulation;
+    }
+
+    .tools button:active {
+      transform: scale(0.96);
+    }
+
+    .tools input[type="file"] {
+      display: none;
+    }
+
+    /* для телефона все поля растянуты */
+    @media (max-width: 600px) {
+      body {
+        padding: 12px 8px;
+        font-size: 15px;
+      }
       .section {
-        padding: 18px 16px;
+        padding: 14px 12px;
       }
       .entry-row {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 8px;
-      }
-      .entry-row .field {
-        flex-wrap: wrap;
+        padding: 12px 12px;
       }
       .entry-row textarea,
       .entry-row input[type="date"],
       .entry-row select {
-        width: 100%;
-        min-width: unset;
+        font-size: 16px; /* предотвращает зум на iOS */
+        padding: 12px 14px;
+        min-height: 48px;
       }
-      .hashtag-set {
-        flex-direction: column;
-        align-items: stretch;
+      .add-btn {
+        font-size: 1rem;
+        padding: 12px 20px;
+        width: 100%;
+        text-align: center;
       }
       .section-header {
         flex-direction: column;
         align-items: stretch;
-        gap: 12px;
       }
-      .add-btn {
-        align-self: flex-start;
+      .section-title {
+        font-size: 1.2rem;
+      }
+      .tools button {
+        flex: 1 1 100%;
+        text-align: center;
+        padding: 14px;
       }
     }
 
@@ -311,6 +348,13 @@
 <body>
 <div class="container">
   <h1>🌸 Трекер фиалок</h1>
+
+  <!-- Панель экспорта/импорта -->
+  <div class="tools">
+    <button id="export-btn">📤 Экспорт данных</button>
+    <button id="import-btn">📥 Импорт данных</button>
+    <input type="file" id="file-input" accept=".json">
+  </div>
 
   <!-- 1. Описание сорта -->
   <div class="section" id="section-sorts">
@@ -415,13 +459,12 @@
       return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    // Авто-расширение textarea
     function autoGrow(textarea) {
       textarea.style.height = 'auto';
       textarea.style.height = textarea.scrollHeight + 'px';
     }
 
-    // Синхронизация данных из DOM (используется при добавлении)
+    // Синхронизация данных из DOM
     function syncAllFromDOM() {
       // Сорта
       document.querySelectorAll('#sort-list .entry-row').forEach(row => {
@@ -482,29 +525,30 @@
             <div class="field">
               <textarea data-field="name" placeholder="Название сорта" rows="1">${escapeHtml(item.name)}</textarea>
             </div>
-            <div class="field">
-              <label>Формат</label>
-              <select data-field="format">
-                <option value="" ${!item.format ? 'selected' : ''} disabled hidden>Выберите</option>
-                <option value="Публикация" ${item.format === 'Публикация' ? 'selected' : ''}>Публикация</option>
-                <option value="Карусель" ${item.format === 'Карусель' ? 'selected' : ''}>Карусель</option>
-                <option value="Reals" ${item.format === 'Reals' ? 'selected' : ''}>Reals</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Дата</label>
-              <input type="date" value="${item.date || ''}" data-field="date">
-            </div>
-            <div class="field checkbox-field">
-              <input type="checkbox" ${item.published ? 'checked' : ''} data-field="published">
-              <label>Опубликовано</label>
+            <div class="field-row">
+              <div class="field">
+                <label>Формат</label>
+                <select data-field="format">
+                  <option value="" ${!item.format ? 'selected' : ''} disabled hidden>Выберите</option>
+                  <option value="Публикация" ${item.format === 'Публикация' ? 'selected' : ''}>Публикация</option>
+                  <option value="Карусель" ${item.format === 'Карусель' ? 'selected' : ''}>Карусель</option>
+                  <option value="Reals" ${item.format === 'Reals' ? 'selected' : ''}>Reals</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Дата</label>
+                <input type="date" value="${item.date || ''}" data-field="date">
+              </div>
+              <div class="field checkbox-field">
+                <input type="checkbox" ${item.published ? 'checked' : ''} data-field="published">
+                <label>Опубликовано</label>
+              </div>
             </div>
             <button class="delete-btn" data-action="delete" title="Удалить сорт">✕</button>
           </div>
         `;
       });
       container.innerHTML = html;
-      // авто-рост для textarea
       container.querySelectorAll('textarea').forEach(t => autoGrow(t));
     }
 
@@ -524,13 +568,15 @@
             <div class="field">
               <textarea data-field="description" placeholder="Краткое описание" rows="1" class="desc-input">${escapeHtml(item.description)}</textarea>
             </div>
-            <div class="field">
-              <label>Дата</label>
-              <input type="date" value="${item.date || ''}" data-field="date">
-            </div>
-            <div class="field checkbox-field">
-              <input type="checkbox" ${item.published ? 'checked' : ''} data-field="published">
-              <label>Опубликовано</label>
+            <div class="field-row">
+              <div class="field">
+                <label>Дата</label>
+                <input type="date" value="${item.date || ''}" data-field="date">
+              </div>
+              <div class="field checkbox-field">
+                <input type="checkbox" ${item.published ? 'checked' : ''} data-field="published">
+                <label>Опубликовано</label>
+              </div>
             </div>
             <button class="delete-btn" data-action="delete" title="Удалить">✕</button>
           </div>
@@ -556,22 +602,24 @@
             <div class="field">
               <textarea data-field="description" placeholder="Краткое описание" rows="1" class="desc-input">${escapeHtml(item.description)}</textarea>
             </div>
-            <div class="field">
-              <label>Формат</label>
-              <select data-field="format">
-                <option value="" ${!item.format ? 'selected' : ''} disabled hidden>Выберите</option>
-                <option value="Публикация" ${item.format === 'Публикация' ? 'selected' : ''}>Публикация</option>
-                <option value="Карусель" ${item.format === 'Карусель' ? 'selected' : ''}>Карусель</option>
-                <option value="Reals" ${item.format === 'Reals' ? 'selected' : ''}>Reals</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Дата</label>
-              <input type="date" value="${item.date || ''}" data-field="date">
-            </div>
-            <div class="field checkbox-field">
-              <input type="checkbox" ${item.published ? 'checked' : ''} data-field="published">
-              <label>Опубликовано</label>
+            <div class="field-row">
+              <div class="field">
+                <label>Формат</label>
+                <select data-field="format">
+                  <option value="" ${!item.format ? 'selected' : ''} disabled hidden>Выберите</option>
+                  <option value="Публикация" ${item.format === 'Публикация' ? 'selected' : ''}>Публикация</option>
+                  <option value="Карусель" ${item.format === 'Карусель' ? 'selected' : ''}>Карусель</option>
+                  <option value="Reals" ${item.format === 'Reals' ? 'selected' : ''}>Reals</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Дата</label>
+                <input type="date" value="${item.date || ''}" data-field="date">
+              </div>
+              <div class="field checkbox-field">
+                <input type="checkbox" ${item.published ? 'checked' : ''} data-field="published">
+                <label>Опубликовано</label>
+              </div>
             </div>
             <button class="delete-btn" data-action="delete" title="Удалить">✕</button>
           </div>
@@ -597,22 +645,24 @@
             <div class="field">
               <textarea data-field="description" placeholder="Краткое описание" rows="1" class="desc-input">${escapeHtml(item.description)}</textarea>
             </div>
-            <div class="field">
-              <label>Формат</label>
-              <select data-field="format">
-                <option value="" ${!item.format ? 'selected' : ''} disabled hidden>Выберите</option>
-                <option value="Публикация" ${item.format === 'Публикация' ? 'selected' : ''}>Публикация</option>
-                <option value="Карусель" ${item.format === 'Карусель' ? 'selected' : ''}>Карусель</option>
-                <option value="Reals" ${item.format === 'Reals' ? 'selected' : ''}>Reals</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Дата</label>
-              <input type="date" value="${item.date || ''}" data-field="date">
-            </div>
-            <div class="field checkbox-field">
-              <input type="checkbox" ${item.published ? 'checked' : ''} data-field="published">
-              <label>Опубликовано</label>
+            <div class="field-row">
+              <div class="field">
+                <label>Формат</label>
+                <select data-field="format">
+                  <option value="" ${!item.format ? 'selected' : ''} disabled hidden>Выберите</option>
+                  <option value="Публикация" ${item.format === 'Публикация' ? 'selected' : ''}>Публикация</option>
+                  <option value="Карусель" ${item.format === 'Карусель' ? 'selected' : ''}>Карусель</option>
+                  <option value="Reals" ${item.format === 'Reals' ? 'selected' : ''}>Reals</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Дата</label>
+                <input type="date" value="${item.date || ''}" data-field="date">
+              </div>
+              <div class="field checkbox-field">
+                <input type="checkbox" ${item.published ? 'checked' : ''} data-field="published">
+                <label>Опубликовано</label>
+              </div>
             </div>
             <button class="delete-btn" data-action="delete" title="Удалить">✕</button>
           </div>
@@ -664,7 +714,6 @@
         item[field] = value;
         saveData();
       }
-      // авто-рост для textarea
       if (target.tagName === 'TEXTAREA') {
         autoGrow(target);
       }
@@ -678,7 +727,6 @@
       const id = row.dataset.id;
       const type = row.dataset.type;
       if (!id || !type) return;
-
       if (data[type]) {
         data[type] = data[type].filter(el => el.id !== id);
         renderAll();
@@ -703,8 +751,8 @@
       data.sorts.push({
         id: generateId(),
         name: '',
-        format: '',   // пусто
-        date: '',     // пусто
+        format: '',
+        date: '',
         published: false
       });
       renderAll();
@@ -748,6 +796,43 @@
       renderAll();
     }
 
+    // Экспорт / Импорт
+    function exportData() {
+      syncAllFromDOM(); // сохраняем текущее состояние
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `violet_tracker_${new Date().toISOString().slice(0,10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function importData(file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          // Проверяем структуру
+          if (!imported.sorts || !imported.info || !imported.aesthetic || !imported.qa || !imported.hashtags) {
+            alert('Неверный формат файла.');
+            return;
+          }
+          if (confirm('Импорт заменит все текущие данные. Продолжить?')) {
+            data = imported;
+            renderAll();
+            alert('Данные успешно импортированы!');
+          }
+        } catch(err) {
+          alert('Ошибка при чтении файла: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
     // Инициализация
     document.addEventListener('DOMContentLoaded', function() {
       renderAll();
@@ -764,6 +849,18 @@
       document.getElementById('add-info-btn').addEventListener('click', addInfo);
       document.getElementById('add-aesthetic-btn').addEventListener('click', addAesthetic);
       document.getElementById('add-qa-btn').addEventListener('click', addQA);
+
+      // Экспорт / Импорт
+      document.getElementById('export-btn').addEventListener('click', exportData);
+      document.getElementById('import-btn').addEventListener('click', function() {
+        document.getElementById('file-input').click();
+      });
+      document.getElementById('file-input').addEventListener('change', function(e) {
+        if (this.files && this.files.length > 0) {
+          importData(this.files[0]);
+          this.value = ''; // сброс
+        }
+      });
     });
   })();
 </script>
