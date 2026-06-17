@@ -98,7 +98,6 @@
       transform: scale(0.98);
     }
 
-    /* Entry rows */
     .entry-list {
       display: flex;
       flex-direction: column;
@@ -201,7 +200,6 @@
       transform: scale(1.2);
     }
 
-    /* Специально для сортов: если опубликовано, шрифт светлее */
     .entry-row.published .sort-name {
       color: #d4c4d4 !important;
       transition: color 0.2s;
@@ -212,13 +210,11 @@
       color: #4a3a4a;
     }
 
-    /* Описание — textarea? используем текстовое поле */
     .entry-row .desc-input {
       flex: 2 1 200px;
       min-width: 160px;
     }
 
-    /* Хэштеги */
     .hashtag-set {
       display: flex;
       flex-wrap: wrap;
@@ -274,7 +270,6 @@
       font-size: 0.95rem;
     }
 
-    /* responsive */
     @media (max-width: 700px) {
       .section {
         padding: 18px 16px;
@@ -307,7 +302,6 @@
       }
     }
 
-    /* пастельные акценты */
     .section:nth-child(1) .section-title { color: #7a5a7a; }
     .section:nth-child(2) .section-title { color: #6a7a6a; }
     .section:nth-child(3) .section-title { color: #7a6a7a; }
@@ -330,7 +324,7 @@
     </div>
   </div>
 
-  <!-- 2. Информативные посты (объемные) -->
+  <!-- 2. Информативные посты -->
   <div class="section" id="section-info">
     <div class="section-header">
       <div class="section-title">📄 Информативные посты <span>только Reals</span></div>
@@ -368,15 +362,12 @@
     <div class="section-header">
       <div class="section-title">🏷️ Наборы хэштегов</div>
     </div>
-    <div id="hashtag-container">
-      <!-- заполняется из JS -->
-    </div>
+    <div id="hashtag-container"></div>
   </div>
 </div>
 
 <script>
   (function() {
-    // ----- Настройки -----
     const STORAGE_KEY = 'violet_tracker_data';
     const DEFAULT_DATA = {
       sorts: [],
@@ -396,13 +387,11 @@
 
     let data = loadData();
 
-    // ----- Вспомогательные функции -----
     function loadData() {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
-          // ensure hashtags exist
           if (!parsed.hashtags || parsed.hashtags.length === 0) {
             parsed.hashtags = DEFAULT_DATA.hashtags;
           }
@@ -422,17 +411,59 @@
       return Date.now() + Math.random().toString(36).substr(2, 6);
     }
 
-    // ----- Рендеринг -----
-    function renderAll() {
-      renderSorts();
-      renderInfo();
-      renderAesthetic();
-      renderQA();
-      renderHashtags();
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // ----- Синхронизация всех данных из DOM в data -----
+    function syncAllFromDOM() {
+      // Сорта
+      document.querySelectorAll('#sort-list .entry-row').forEach(row => {
+        const id = row.dataset.id;
+        const item = data.sorts.find(el => el.id === id);
+        if (!item) return;
+        item.name = row.querySelector('.sort-name')?.value || '';
+        item.format = row.querySelector('select[data-field="format"]')?.value || 'Публикация';
+        item.date = row.querySelector('input[type="date"]')?.value || '';
+        item.published = row.querySelector('input[data-field="published"]')?.checked || false;
+      });
+      // Информативные
+      document.querySelectorAll('#info-list .entry-row').forEach(row => {
+        const id = row.dataset.id;
+        const item = data.info.find(el => el.id === id);
+        if (!item) return;
+        item.name = row.querySelector('input[data-field="name"]')?.value || '';
+        item.description = row.querySelector('input[data-field="description"]')?.value || '';
+        item.date = row.querySelector('input[type="date"]')?.value || '';
+        item.published = row.querySelector('input[data-field="published"]')?.checked || false;
+      });
+      // Эстетичный
+      document.querySelectorAll('#aesthetic-list .entry-row').forEach(row => {
+        const id = row.dataset.id;
+        const item = data.aesthetic.find(el => el.id === id);
+        if (!item) return;
+        item.name = row.querySelector('input[data-field="name"]')?.value || '';
+        item.description = row.querySelector('input[data-field="description"]')?.value || '';
+        item.format = row.querySelector('select[data-field="format"]')?.value || 'Публикация';
+        item.date = row.querySelector('input[type="date"]')?.value || '';
+        item.published = row.querySelector('input[data-field="published"]')?.checked || false;
+      });
+      // QA
+      document.querySelectorAll('#qa-list .entry-row').forEach(row => {
+        const id = row.dataset.id;
+        const item = data.qa.find(el => el.id === id);
+        if (!item) return;
+        item.name = row.querySelector('input[data-field="name"]')?.value || '';
+        item.description = row.querySelector('input[data-field="description"]')?.value || '';
+        item.format = row.querySelector('select[data-field="format"]')?.value || 'Публикация';
+        item.date = row.querySelector('input[type="date"]')?.value || '';
+        item.published = row.querySelector('input[data-field="published"]')?.checked || false;
+      });
       saveData();
     }
 
-    // ----- 1. Сорта -----
+    // ----- Рендеринг -----
     function renderSorts() {
       const container = document.getElementById('sort-list');
       if (data.sorts.length === 0) {
@@ -440,7 +471,7 @@
         return;
       }
       let html = '';
-      data.sorts.forEach((item, index) => {
+      data.sorts.forEach(item => {
         const publishedClass = item.published ? 'published' : '';
         html += `
           <div class="entry-row ${publishedClass}" data-id="${item.id}" data-type="sort">
@@ -470,7 +501,6 @@
       container.innerHTML = html;
     }
 
-    // ----- 2. Информативные -----
     function renderInfo() {
       const container = document.getElementById('info-list');
       if (data.info.length === 0) {
@@ -502,7 +532,6 @@
       container.innerHTML = html;
     }
 
-    // ----- 3. Эстетичный -----
     function renderAesthetic() {
       const container = document.getElementById('aesthetic-list');
       if (data.aesthetic.length === 0) {
@@ -542,7 +571,6 @@
       container.innerHTML = html;
     }
 
-    // ----- 4. Мини вопрос-ответ -----
     function renderQA() {
       const container = document.getElementById('qa-list');
       if (data.qa.length === 0) {
@@ -582,11 +610,10 @@
       container.innerHTML = html;
     }
 
-    // ----- 5. Хэштеги -----
     function renderHashtags() {
       const container = document.getElementById('hashtag-container');
       let html = '';
-      data.hashtags.forEach((set, index) => {
+      data.hashtags.forEach(set => {
         html += `
           <div class="hashtag-set" data-id="${set.id}">
             <div class="tags">${escapeHtml(set.tags)}</div>
@@ -600,7 +627,16 @@
       container.innerHTML = html;
     }
 
-    // ----- Обработчики событий (делегирование) -----
+    function renderAll() {
+      renderSorts();
+      renderInfo();
+      renderAesthetic();
+      renderQA();
+      renderHashtags();
+      saveData();
+    }
+
+    // ----- Обработчики -----
     function handleInputChange(e) {
       const target = e.target;
       const row = target.closest('.entry-row');
@@ -608,25 +644,16 @@
       const id = row.dataset.id;
       const type = row.dataset.type;
       if (!id || !type) return;
-
       const field = target.dataset.field;
       let value = target.type === 'checkbox' ? target.checked : target.value;
-
-      // найти элемент в данных
       let item = data[type]?.find(el => el.id === id);
       if (!item) return;
-
       if (field === 'name' || field === 'description' || field === 'format' || field === 'date' || field === 'published') {
-        if (field === 'published') {
-          item.published = value;
-        } else {
-          item[field] = value;
-        }
-        // если это сорт и поле name, или published, то перерисовываем сорта для обновления класса
-        if (type === 'sort' && (field === 'name' || field === 'published')) {
-          renderSorts();
-        } else {
-          saveData();
+        item[field] = value;
+        saveData();
+        // если это сорт и поле published, меняем класс строки
+        if (type === 'sort' && field === 'published') {
+          row.classList.toggle('published', value);
         }
       }
     }
@@ -641,6 +668,8 @@
       if (!id || !type) return;
       if (!confirm(`Удалить этот элемент?`)) return;
 
+      // Синхронизируем все данные перед удалением
+      syncAllFromDOM();
       data[type] = data[type].filter(el => el.id !== id);
       renderAll();
     }
@@ -657,8 +686,9 @@
       }
     }
 
-    // ----- Добавление новых записей -----
+    // ----- Добавление -----
     function addSort() {
+      syncAllFromDOM();
       data.sorts.push({
         id: generateId(),
         name: '',
@@ -666,11 +696,11 @@
         date: '',
         published: false
       });
-      renderSorts();
-      saveData();
+      renderAll();
     }
 
     function addInfo() {
+      syncAllFromDOM();
       data.info.push({
         id: generateId(),
         name: '',
@@ -678,11 +708,11 @@
         date: '',
         published: false
       });
-      renderInfo();
-      saveData();
+      renderAll();
     }
 
     function addAesthetic() {
+      syncAllFromDOM();
       data.aesthetic.push({
         id: generateId(),
         name: '',
@@ -691,11 +721,11 @@
         date: '',
         published: false
       });
-      renderAesthetic();
-      saveData();
+      renderAll();
     }
 
     function addQA() {
+      syncAllFromDOM();
       data.qa.push({
         id: generateId(),
         name: '',
@@ -704,37 +734,26 @@
         date: '',
         published: false
       });
-      renderQA();
-      saveData();
+      renderAll();
     }
 
-    // ----- Вспомогательная функция для экранирования -----
-    function escapeHtml(str) {
-      if (!str) return '';
-      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    }
-
-    // ----- Инициализация событий -----
+    // ----- Инициализация -----
     document.addEventListener('DOMContentLoaded', function() {
       renderAll();
 
-      // делегирование изменений в полях ввода
       document.querySelectorAll('.entry-list').forEach(list => {
         list.addEventListener('change', handleInputChange);
-        list.addEventListener('input', handleInputChange); // для text inputs
+        list.addEventListener('input', handleInputChange);
         list.addEventListener('click', handleDelete);
       });
 
-      // хэштеги
       document.getElementById('hashtag-container').addEventListener('change', handleHashtagChange);
 
-      // кнопки добавления
       document.getElementById('add-sort-btn').addEventListener('click', addSort);
       document.getElementById('add-info-btn').addEventListener('click', addInfo);
       document.getElementById('add-aesthetic-btn').addEventListener('click', addAesthetic);
       document.getElementById('add-qa-btn').addEventListener('click', addQA);
     });
-
   })();
 </script>
 </body>
