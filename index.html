@@ -73,6 +73,138 @@
     }
     .add-btn:active { transform: scale(0.96); }
     .entry-list { display: flex; flex-direction: column; gap: 12px; }
+
+    /* ===== Аккордеон для сортов ===== */
+    .sort-card {
+      background: rgba(255,252,255,0.6);
+      border-radius: 18px;
+      border: 1px solid rgba(210,180,210,0.2);
+      overflow: hidden;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .sort-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      background: rgba(255,248,255,0.4);
+      transition: background 0.2s;
+    }
+    .sort-card-header:hover {
+      background: rgba(255,245,255,0.6);
+    }
+    .sort-card-header .sort-name-display {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #4a3a4a;
+      flex: 1;
+      min-width: 60px;
+    }
+    .sort-card-header .sort-status {
+      font-size: 0.85rem;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .sort-card-header .sort-status.published { color: #27ae60; }
+    .sort-card-header .sort-status.not-published { color: #b08ab0; }
+    .sort-card-header .toggle-icon {
+      font-size: 1.2rem;
+      color: #b08ab0;
+      transition: transform 0.3s;
+      margin-left: auto;
+      padding: 0 4px;
+      user-select: none;
+    }
+    .sort-card-header .toggle-icon.open { transform: rotate(180deg); }
+    .sort-card-body {
+      padding: 0 18px 18px 18px;
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      border-top: 1px solid rgba(210,180,210,0.15);
+      padding-top: 16px;
+      cursor: default;
+    }
+    .sort-card-body.open { display: flex; }
+    .sort-card-body .field { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+    .sort-card-body .field-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    .sort-card-body .field-row .field { flex: 1 1 140px; min-width: 120px; }
+    .sort-card-body label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #6a4a6a;
+      opacity: 0.8;
+      letter-spacing: 0.3px;
+    }
+    .sort-card-body textarea,
+    .sort-card-body input[type="date"],
+    .sort-card-body select {
+      font-family: 'Quicksand', sans-serif;
+      padding: 10px 14px;
+      border-radius: 30px;
+      border: 1px solid #d8c4d8;
+      background: white;
+      font-size: 1rem;
+      color: #3a2a3a;
+      outline: none;
+      transition: border 0.2s;
+      width: 100%;
+      min-height: 44px;
+      resize: none;
+      overflow: hidden;
+      line-height: 1.4;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .sort-card-body textarea { border-radius: 18px; min-height: 44px; }
+    .sort-card-body select {
+      padding-right: 30px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236a4a6a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+    }
+    .sort-card-body select, .sort-card-body select option { color: #3a2a3a; }
+    .sort-card-body textarea:focus,
+    .sort-card-body input[type="date"]:focus,
+    .sort-card-body select:focus {
+      border-color: #b89ab8;
+      box-shadow: 0 0 0 3px rgba(180,140,180,0.15);
+    }
+    .sort-card-body .checkbox-field {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      padding: 6px 0;
+    }
+    .sort-card-body .checkbox-field input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      accent-color: #b89ab8;
+      cursor: pointer;
+    }
+    .sort-card-body .delete-btn {
+      background: none;
+      border: none;
+      font-size: 1.6rem;
+      color: #b08ab0;
+      cursor: pointer;
+      padding: 4px 10px;
+      transition: color 0.2s, transform 0.1s;
+      line-height: 1;
+      align-self: flex-end;
+      touch-action: manipulation;
+    }
+    .sort-card-body .delete-btn:active { transform: scale(1.2); }
+    .sort-card-body .delete-btn:hover { color: #b06080; }
+
+    /* Остальные блоки (не сорта) – как раньше */
     .entry-row {
       display: flex;
       flex-direction: column;
@@ -157,6 +289,7 @@
       touch-action: manipulation;
     }
     .entry-row .delete-btn:active { transform: scale(1.2); }
+
     .hashtag-set {
       display: flex;
       flex-direction: column;
@@ -238,10 +371,27 @@
     }
     .sync-status .error { color: #c0392b; }
     .sync-status .success { color: #27ae60; }
+
     @media (max-width: 600px) {
       body { padding: 12px 8px; font-size: 15px; }
       .section { padding: 14px 12px; }
-      .entry-row { padding: 12px 12px; }
+      .sort-card-header {
+        padding: 10px 12px;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .sort-card-header .sort-name-display {
+        font-size: 1rem;
+        flex-basis: 100%;
+      }
+      .sort-card-body { padding: 0 12px 12px 12px; }
+      .sort-card-body textarea,
+      .sort-card-body input[type="date"],
+      .sort-card-body select {
+        font-size: 16px;
+        padding: 12px 14px;
+        min-height: 48px;
+      }
       .entry-row textarea,
       .entry-row input[type="date"],
       .entry-row select {
@@ -275,7 +425,7 @@
     <input type="file" id="file-input" accept=".json">
   </div>
 
-  <!-- Блоки -->
+  <!-- Блок сортов (аккордеон) -->
   <div class="section" id="section-sorts">
     <div class="section-header">
       <div class="section-title">🌱 Описание сорта <span>с возможностью редактирования</span></div>
@@ -286,6 +436,7 @@
     </div>
   </div>
 
+  <!-- Информативные посты -->
   <div class="section" id="section-info">
     <div class="section-header">
       <div class="section-title">📄 Информативные посты <span>только Reals</span></div>
@@ -296,6 +447,7 @@
     </div>
   </div>
 
+  <!-- Эстетичный контент -->
   <div class="section" id="section-aesthetic">
     <div class="section-header">
       <div class="section-title">🎨 Эстетичный контент</div>
@@ -306,6 +458,7 @@
     </div>
   </div>
 
+  <!-- Мини вопрос-ответ -->
   <div class="section" id="section-qa">
     <div class="section-header">
       <div class="section-title">❓ Мини вопрос-ответ</div>
@@ -316,6 +469,7 @@
     </div>
   </div>
 
+  <!-- Наборы хэштегов -->
   <div class="section" id="section-hashtags">
     <div class="section-header">
       <div class="section-title">🏷️ Наборы хэштегов</div>
@@ -333,7 +487,7 @@
   (function() {
     // ========== ВСТАВЬТЕ ВАШУ КОНФИГУРАЦИЮ FIREBASE ==========
     const firebaseConfig = {
-      apiKey: "AIzaSyA5MMiGc44Ey1ANK-JlQ1lQlBHeCB3AayY",
+     apiKey: "AIzaSyA5MMiGc44Ey1ANK-JlQ1lQlBHeCB3AayY",
       authDomain: "violet-tracker.firebaseapp.com",
       projectId: "violet-tracker",
       storageBucket: "violet-tracker.firebasestorage.app",
@@ -343,7 +497,7 @@
     };
     // =========================================================
 
-    // Инициализируем Firebase только если есть конфигурация (проверяем наличие ключа)
+    // Инициализируем Firebase только если есть конфигурация
     let db, auth;
     let firebaseReady = false;
     if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "AIzaSy...") {
@@ -416,7 +570,7 @@
       return Date.now() + Math.random().toString(36).substr(2, 6);
     }
 
-    // ======== Рендеринг ========
+    // ======== Рендеринг сортов (аккордеон) ========
     function renderSorts() {
       const container = document.getElementById('sort-list');
       if (data.sorts.length === 0) {
@@ -425,38 +579,71 @@
       }
       let html = '';
       data.sorts.forEach(item => {
+        const publishedText = item.published ? '✅ Опубликовано' : '⭕ Не опубликовано';
+        const publishedClass = item.published ? 'published' : 'not-published';
         html += `
-          <div class="entry-row" data-id="${item.id}" data-type="sorts">
-            <div class="field">
-              <textarea data-field="name" placeholder="Название сорта" rows="1">${escapeHtml(item.name)}</textarea>
+          <div class="sort-card" data-id="${item.id}">
+            <div class="sort-card-header">
+              <span class="sort-name-display">${escapeHtml(item.name) || 'Без названия'}</span>
+              <span class="sort-status ${publishedClass}">${publishedText}</span>
+              <span class="toggle-icon">▼</span>
             </div>
-            <div class="field-row">
+            <div class="sort-card-body">
               <div class="field">
-                <label>Формат</label>
-                <select data-field="format">
-                  <option value="" ${!item.format ? 'selected' : ''} disabled hidden>Выберите</option>
-                  <option value="Публикация" ${item.format === 'Публикация' ? 'selected' : ''}>Публикация</option>
-                  <option value="Карусель" ${item.format === 'Карусель' ? 'selected' : ''}>Карусель</option>
-                  <option value="Reals" ${item.format === 'Reals' ? 'selected' : ''}>Reals</option>
-                </select>
+                <label>Название сорта</label>
+                <textarea data-field="name" rows="1">${escapeHtml(item.name)}</textarea>
               </div>
-              <div class="field">
-                <label>Дата</label>
-                <input type="date" value="${item.date || ''}" data-field="date">
+              <div class="field-row">
+                <div class="field">
+                  <label>Формат</label>
+                  <select data-field="format">
+                    <option value="" ${!item.format ? 'selected' : ''} disabled hidden>Выберите</option>
+                    <option value="Публикация" ${item.format === 'Публикация' ? 'selected' : ''}>Публикация</option>
+                    <option value="Карусель" ${item.format === 'Карусель' ? 'selected' : ''}>Карусель</option>
+                    <option value="Reals" ${item.format === 'Reals' ? 'selected' : ''}>Reals</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Дата</label>
+                  <input type="date" value="${item.date || ''}" data-field="date">
+                </div>
+                <div class="field checkbox-field">
+                  <input type="checkbox" ${item.published ? 'checked' : ''} data-field="published">
+                  <label>Опубликовано</label>
+                </div>
               </div>
-              <div class="field checkbox-field">
-                <input type="checkbox" ${item.published ? 'checked' : ''} data-field="published">
-                <label>Опубликовано</label>
-              </div>
+              <button class="delete-btn" data-action="delete" title="Удалить сорт">✕</button>
             </div>
-            <button class="delete-btn" data-action="delete" title="Удалить сорт">✕</button>
           </div>
         `;
       });
       container.innerHTML = html;
-      container.querySelectorAll('textarea').forEach(t => autoGrow(t));
+
+      // Обработчики для аккордеона
+      container.querySelectorAll('.sort-card').forEach(card => {
+        const header = card.querySelector('.sort-card-header');
+        const body = card.querySelector('.sort-card-body');
+        const icon = card.querySelector('.toggle-icon');
+
+        header.addEventListener('click', function(e) {
+          // Не сворачиваем, если клик по кнопке удаления или чекбоксу
+          if (e.target.closest('.delete-btn') || e.target.closest('.checkbox-field')) return;
+          const isOpen = body.classList.toggle('open');
+          icon.classList.toggle('open', isOpen);
+        });
+
+        // Авто-рост textarea внутри тела
+        const textarea = body.querySelector('textarea');
+        if (textarea) {
+          autoGrow(textarea);
+          textarea.addEventListener('input', function() {
+            autoGrow(this);
+          });
+        }
+      });
     }
 
+    // ======== Рендеринг остальных блоков (без изменений) ========
     function renderInfo() {
       const container = document.getElementById('info-list');
       if (data.info.length === 0) {
@@ -603,17 +790,27 @@
       saveLocalData();
     }
 
-    // ======== Синхронизация с DOM ========
+    // ======== Синхронизация данных из DOM ========
     function syncAllFromDOM() {
-      document.querySelectorAll('#sort-list .entry-row').forEach(row => {
-        const id = row.dataset.id;
+      // Сорта (аккордеон)
+      document.querySelectorAll('#sort-list .sort-card').forEach(card => {
+        const id = card.dataset.id;
         const item = data.sorts.find(el => el.id === id);
         if (!item) return;
-        item.name = row.querySelector('textarea[data-field="name"]')?.value || '';
-        item.format = row.querySelector('select[data-field="format"]')?.value || '';
-        item.date = row.querySelector('input[data-field="date"]')?.value || '';
-        item.published = row.querySelector('input[data-field="published"]')?.checked || false;
+        const body = card.querySelector('.sort-card-body');
+        if (body) {
+          const nameTextarea = body.querySelector('textarea[data-field="name"]');
+          const formatSelect = body.querySelector('select[data-field="format"]');
+          const dateInput = body.querySelector('input[data-field="date"]');
+          const publishedCheck = body.querySelector('input[data-field="published"]');
+          if (nameTextarea) item.name = nameTextarea.value;
+          if (formatSelect) item.format = formatSelect.value;
+          if (dateInput) item.date = dateInput.value;
+          if (publishedCheck) item.published = publishedCheck.checked;
+        }
       });
+
+      // Остальные блоки
       document.querySelectorAll('#info-list .entry-row').forEach(row => {
         const id = row.dataset.id;
         const item = data.info.find(el => el.id === id);
@@ -643,10 +840,30 @@
         item.date = row.querySelector('input[data-field="date"]')?.value || '';
         item.published = row.querySelector('input[data-field="published"]')?.checked || false;
       });
+      // Хэштеги
+      document.querySelectorAll('#hashtag-container .hashtag-set').forEach(set => {
+        const id = set.dataset.id;
+        const item = data.hashtags.find(h => h.id == id);
+        if (!item) return;
+        const dateInput = set.querySelector('input[data-field="lastUsed"]');
+        if (dateInput) item.lastUsed = dateInput.value;
+      });
       saveLocalData();
     }
 
-    // ======== Работа с Firestore (только если Firebase настроен) ========
+    // ======== Функция обновления заголовка карточки (при изменении названия или статуса) ========
+    function updateSortCardHeader(card, item) {
+      const nameDisplay = card.querySelector('.sort-name-display');
+      const statusSpan = card.querySelector('.sort-status');
+      if (nameDisplay) nameDisplay.textContent = item.name || 'Без названия';
+      if (statusSpan) {
+        const publishedText = item.published ? '✅ Опубликовано' : '⭕ Не опубликовано';
+        statusSpan.textContent = publishedText;
+        statusSpan.className = 'sort-status ' + (item.published ? 'published' : 'not-published');
+      }
+    }
+
+    // ======== Работа с Firestore ========
     function saveToFirestore() {
       if (!firebaseReady || !auth || !auth.currentUser) {
         setSyncStatus('не авторизован', 'error');
@@ -718,9 +935,33 @@
       setSyncStatus('Firebase не настроен, работаем локально', '');
     }
 
-    // ======== Обработчики событий DOM ========
+    // ======== Обработчики событий ========
     function handleInputChange(e) {
       const target = e.target;
+      // Проверяем, не является ли событие внутри карточки сорта
+      const sortCard = target.closest('.sort-card');
+      if (sortCard) {
+        const id = sortCard.dataset.id;
+        const item = data.sorts.find(el => el.id === id);
+        if (!item) return;
+        const field = target.dataset.field;
+        let value = target.type === 'checkbox' ? target.checked : target.value;
+        if (field === 'name' || field === 'format' || field === 'date' || field === 'published') {
+          item[field] = value;
+          saveLocalData();
+          // Обновляем заголовок карточки (название и статус)
+          updateSortCardHeader(sortCard, item);
+          if (firebaseReady && auth && auth.currentUser) {
+            saveToFirestore().catch(() => {});
+          }
+        }
+        if (target.tagName === 'TEXTAREA') {
+          autoGrow(target);
+        }
+        return;
+      }
+
+      // Для остальных блоков
       const row = target.closest('.entry-row');
       if (!row) return;
       const id = row.dataset.id;
@@ -745,6 +986,22 @@
     function handleDelete(e) {
       const deleteBtn = e.target.closest('[data-action="delete"]');
       if (!deleteBtn) return;
+
+      // Проверяем, не является ли кнопка удаления внутри карточки сорта
+      const sortCard = deleteBtn.closest('.sort-card');
+      if (sortCard) {
+        const id = sortCard.dataset.id;
+        if (id) {
+          data.sorts = data.sorts.filter(el => el.id !== id);
+          renderAll();
+          if (firebaseReady && auth && auth.currentUser) {
+            saveToFirestore().catch(() => {});
+          }
+        }
+        return;
+      }
+
+      // Для остальных блоков
       const row = deleteBtn.closest('.entry-row');
       if (!row) return;
       const id = row.dataset.id;
@@ -857,12 +1114,14 @@
     document.addEventListener('DOMContentLoaded', function() {
       renderAll();
 
-      document.querySelectorAll('.entry-list').forEach(list => {
-        list.addEventListener('change', handleInputChange);
-        list.addEventListener('input', handleInputChange);
-        list.addEventListener('click', handleDelete);
+      // Подписываемся на события для всех списков
+      document.querySelectorAll('#sort-list, #info-list, #aesthetic-list, #qa-list, #hashtag-container').forEach(container => {
+        container.addEventListener('change', handleInputChange);
+        container.addEventListener('input', handleInputChange);
+        container.addEventListener('click', handleDelete);
       });
 
+      // Для хэштегов отдельно
       document.getElementById('hashtag-container').addEventListener('change', handleHashtagChange);
 
       document.getElementById('add-sort-btn').addEventListener('click', addSort);
