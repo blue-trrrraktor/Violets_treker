@@ -1,1 +1,741 @@
-ляляля
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Трекер фиалок 🌸</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: #f8f0f5;
+      color: #4a3a4a;
+      padding: 30px 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      font-weight: 600;
+      font-size: 2.2rem;
+      color: #7a5a7a;
+      margin-bottom: 30px;
+      letter-spacing: 1px;
+      text-shadow: 2px 2px 8px rgba(180, 140, 180, 0.15);
+    }
+
+    .section {
+      background: rgba(255, 245, 250, 0.7);
+      backdrop-filter: blur(2px);
+      border-radius: 24px;
+      padding: 25px 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 25px rgba(160, 120, 160, 0.10);
+      border: 1px solid rgba(220, 190, 220, 0.25);
+      transition: box-shadow 0.2s;
+    }
+
+    .section:hover {
+      box-shadow: 0 12px 35px rgba(160, 120, 160, 0.15);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .section-title {
+      font-weight: 600;
+      font-size: 1.5rem;
+      color: #6a4a6a;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title span {
+      background: #e7d4e7;
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #5a3a5a;
+    }
+
+    .add-btn {
+      background: #d9c4d9;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 40px;
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #4a2a4a;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      box-shadow: 0 4px 10px rgba(180, 140, 180, 0.15);
+    }
+
+    .add-btn:hover {
+      background: #d0b8d0;
+      transform: scale(1.02);
+    }
+
+    .add-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Entry rows */
+    .entry-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .entry-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px 18px;
+      background: rgba(255, 252, 255, 0.6);
+      padding: 12px 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(210, 180, 210, 0.2);
+      transition: background 0.2s;
+    }
+
+    .entry-row:hover {
+      background: rgba(255, 248, 255, 0.8);
+    }
+
+    .entry-row .field {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .entry-row label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #6a4a6a;
+      opacity: 0.8;
+      letter-spacing: 0.3px;
+    }
+
+    .entry-row input[type="text"],
+    .entry-row input[type="date"],
+    .entry-row select {
+      font-family: 'Quicksand', sans-serif;
+      padding: 6px 12px;
+      border-radius: 30px;
+      border: 1px solid #d8c4d8;
+      background: white;
+      font-size: 0.9rem;
+      color: #3a2a3a;
+      outline: none;
+      transition: border 0.2s;
+      min-width: 100px;
+    }
+
+    .entry-row input[type="text"]:focus,
+    .entry-row input[type="date"]:focus,
+    .entry-row select:focus {
+      border-color: #b89ab8;
+      box-shadow: 0 0 0 3px rgba(180, 140, 180, 0.15);
+    }
+
+    .entry-row input[type="text"] {
+      flex: 1 1 140px;
+      min-width: 120px;
+    }
+
+    .entry-row input[type="date"] {
+      min-width: 140px;
+    }
+
+    .entry-row select {
+      min-width: 110px;
+    }
+
+    .entry-row .checkbox-field {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    .entry-row .checkbox-field input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #b89ab8;
+      cursor: pointer;
+    }
+
+    .entry-row .delete-btn {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      color: #b08ab0;
+      cursor: pointer;
+      padding: 0 6px;
+      transition: color 0.2s, transform 0.1s;
+      line-height: 1;
+    }
+
+    .entry-row .delete-btn:hover {
+      color: #b06080;
+      transform: scale(1.2);
+    }
+
+    /* Специально для сортов: если опубликовано, шрифт светлее */
+    .entry-row.published .sort-name {
+      color: #d4c4d4 !important;
+      transition: color 0.2s;
+    }
+
+    .entry-row .sort-name {
+      font-weight: 500;
+      color: #4a3a4a;
+    }
+
+    /* Описание — textarea? используем текстовое поле */
+    .entry-row .desc-input {
+      flex: 2 1 200px;
+      min-width: 160px;
+    }
+
+    /* Хэштеги */
+    .hashtag-set {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px 20px;
+      background: rgba(255, 252, 255, 0.6);
+      padding: 12px 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(210, 180, 210, 0.2);
+      margin-bottom: 10px;
+    }
+
+    .hashtag-set .tags {
+      flex: 1 1 300px;
+      font-size: 0.9rem;
+      color: #4a3a4a;
+      word-break: break-word;
+    }
+
+    .hashtag-set .date-field {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hashtag-set .date-field label {
+      font-weight: 500;
+      color: #6a4a6a;
+      font-size: 0.85rem;
+    }
+
+    .hashtag-set input[type="date"] {
+      font-family: 'Quicksand', sans-serif;
+      padding: 6px 12px;
+      border-radius: 30px;
+      border: 1px solid #d8c4d8;
+      background: white;
+      font-size: 0.9rem;
+      color: #3a2a3a;
+      outline: none;
+      min-width: 140px;
+    }
+
+    .hashtag-set input[type="date"]:focus {
+      border-color: #b89ab8;
+      box-shadow: 0 0 0 3px rgba(180, 140, 180, 0.15);
+    }
+
+    .empty-message {
+      color: #b09ab0;
+      font-style: italic;
+      padding: 8px 0;
+      font-size: 0.95rem;
+    }
+
+    /* responsive */
+    @media (max-width: 700px) {
+      .section {
+        padding: 18px 16px;
+      }
+      .entry-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+      .entry-row .field {
+        flex-wrap: wrap;
+      }
+      .entry-row input[type="text"],
+      .entry-row input[type="date"],
+      .entry-row select {
+        width: 100%;
+        min-width: unset;
+      }
+      .hashtag-set {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .section-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+      .add-btn {
+        align-self: flex-start;
+      }
+    }
+
+    /* пастельные акценты */
+    .section:nth-child(1) .section-title { color: #7a5a7a; }
+    .section:nth-child(2) .section-title { color: #6a7a6a; }
+    .section:nth-child(3) .section-title { color: #7a6a7a; }
+    .section:nth-child(4) .section-title { color: #7a6a5a; }
+    .section:nth-child(5) .section-title { color: #6a5a7a; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>🌸 Трекер фиалок</h1>
+
+  <!-- 1. Описание сорта -->
+  <div class="section" id="section-sorts">
+    <div class="section-header">
+      <div class="section-title">🌱 Описание сорта <span>с возможностью редактирования</span></div>
+      <button class="add-btn" id="add-sort-btn">➕ Добавить сорт</button>
+    </div>
+    <div class="entry-list" id="sort-list">
+      <div class="empty-message">Пока нет сортов. Нажмите «Добавить сорт».</div>
+    </div>
+  </div>
+
+  <!-- 2. Информативные посты (объемные) -->
+  <div class="section" id="section-info">
+    <div class="section-header">
+      <div class="section-title">📄 Информативные посты <span>только Reals</span></div>
+      <button class="add-btn" id="add-info-btn">➕ Добавить информационный пост</button>
+    </div>
+    <div class="entry-list" id="info-list">
+      <div class="empty-message">Нет информационных постов.</div>
+    </div>
+  </div>
+
+  <!-- 3. Эстетичный контент -->
+  <div class="section" id="section-aesthetic">
+    <div class="section-header">
+      <div class="section-title">🎨 Эстетичный контент</div>
+      <button class="add-btn" id="add-aesthetic-btn">➕ Добавить эстетичный контент</button>
+    </div>
+    <div class="entry-list" id="aesthetic-list">
+      <div class="empty-message">Нет эстетичного контента.</div>
+    </div>
+  </div>
+
+  <!-- 4. Мини вопрос-ответ -->
+  <div class="section" id="section-qa">
+    <div class="section-header">
+      <div class="section-title">❓ Мини вопрос-ответ</div>
+      <button class="add-btn" id="add-qa-btn">➕ Добавить мини вопрос-ответ</button>
+    </div>
+    <div class="entry-list" id="qa-list">
+      <div class="empty-message">Нет вопросов-ответов.</div>
+    </div>
+  </div>
+
+  <!-- 5. Наборы хэштегов -->
+  <div class="section" id="section-hashtags">
+    <div class="section-header">
+      <div class="section-title">🏷️ Наборы хэштегов</div>
+    </div>
+    <div id="hashtag-container">
+      <!-- заполняется из JS -->
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // ----- Настройки -----
+    const STORAGE_KEY = 'violet_tracker_data';
+    const DEFAULT_DATA = {
+      sorts: [],
+      info: [],
+      aesthetic: [],
+      qa: [],
+      hashtags: [
+        { id: 1, tags: '#фиалки #комнатныецветы #уходзафиалками #красотавокруг #любовькцветам', lastUsed: '' },
+        { id: 2, tags: '#нежныефиалки #цветочнаяэстетика #атмосферауюта #красотаприроды #вдохновениецветами', lastUsed: '' },
+        { id: 3, tags: '#коллекцияфиалок #редкиефиалки #жизньвцветах #моястрасть #гармонияприроды', lastUsed: '' },
+        { id: 4, tags: '#размножениефиалок #выращиваниефиалок #зелёныйдом #радостьвмелочах #уютныйуголок', lastUsed: '' },
+        { id: 5, tags: '#фиалковыйрай #цветущиефиалки #любовьксебе #моментысчастья #жизньпрекрасна', lastUsed: '' },
+        { id: 6, tags: '#моифиалки #цветыдома #хорошеенастроение #позитивкаждыйдень #магияцветов', lastUsed: '' },
+        { id: 7, tags: '#фиалкакрасоты #нежностьвдеталях #волшебствоприроды #чувствопрекрасного #очарованиецветов', lastUsed: '' }
+      ]
+    };
+
+    let data = loadData();
+
+    // ----- Вспомогательные функции -----
+    function loadData() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          // ensure hashtags exist
+          if (!parsed.hashtags || parsed.hashtags.length === 0) {
+            parsed.hashtags = DEFAULT_DATA.hashtags;
+          }
+          return parsed;
+        } catch (e) {
+          return JSON.parse(JSON.stringify(DEFAULT_DATA));
+        }
+      }
+      return JSON.parse(JSON.stringify(DEFAULT_DATA));
+    }
+
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function generateId() {
+      return Date.now() + Math.random().toString(36).substr(2, 6);
+    }
+
+    // ----- Рендеринг -----
+    function renderAll() {
+      renderSorts();
+      renderInfo();
+      renderAesthetic();
+      renderQA();
+      renderHashtags();
+      saveData();
+    }
+
+    // ----- 1. Сорта -----
+    function renderSorts() {
+      const container = document.getElementById('sort-list');
+      if (data.sorts.length === 0) {
+        container.innerHTML = '<div class="empty-message">Пока нет сортов. Нажмите «Добавить сорт».</div>';
+        return;
+      }
+      let html = '';
+      data.sorts.forEach((item, index) => {
+        const publishedClass = item.published ? 'published' : '';
+        html += `
+          <div class="entry-row ${publishedClass}" data-id="${item.id}" data-type="sort">
+            <div class="field">
+              <input type="text" class="sort-name" value="${escapeHtml(item.name)}" placeholder="Название сорта" data-field="name">
+            </div>
+            <div class="field">
+              <label>Формат</label>
+              <select data-field="format">
+                <option value="Публикация" ${item.format === 'Публикация' ? 'selected' : ''}>Публикация</option>
+                <option value="Карусель" ${item.format === 'Карусель' ? 'selected' : ''}>Карусель</option>
+                <option value="Reals" ${item.format === 'Reals' ? 'selected' : ''}>Reals</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Дата</label>
+              <input type="date" value="${item.date || ''}" data-field="date">
+            </div>
+            <div class="field checkbox-field">
+              <input type="checkbox" ${item.published ? 'checked' : ''} data-field="published">
+              <label>Опубликовано</label>
+            </div>
+            <button class="delete-btn" data-action="delete" title="Удалить сорт">✕</button>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    // ----- 2. Информативные -----
+    function renderInfo() {
+      const container = document.getElementById('info-list');
+      if (data.info.length === 0) {
+        container.innerHTML = '<div class="empty-message">Нет информационных постов.</div>';
+        return;
+      }
+      let html = '';
+      data.info.forEach(item => {
+        html += `
+          <div class="entry-row" data-id="${item.id}" data-type="info">
+            <div class="field">
+              <input type="text" value="${escapeHtml(item.name)}" placeholder="Название" data-field="name">
+            </div>
+            <div class="field">
+              <input type="text" value="${escapeHtml(item.description)}" placeholder="Краткое описание" data-field="description" class="desc-input">
+            </div>
+            <div class="field">
+              <label>Дата</label>
+              <input type="date" value="${item.date || ''}" data-field="date">
+            </div>
+            <div class="field checkbox-field">
+              <input type="checkbox" ${item.published ? 'checked' : ''} data-field="published">
+              <label>Опубликовано</label>
+            </div>
+            <button class="delete-btn" data-action="delete" title="Удалить">✕</button>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    // ----- 3. Эстетичный -----
+    function renderAesthetic() {
+      const container = document.getElementById('aesthetic-list');
+      if (data.aesthetic.length === 0) {
+        container.innerHTML = '<div class="empty-message">Нет эстетичного контента.</div>';
+        return;
+      }
+      let html = '';
+      data.aesthetic.forEach(item => {
+        html += `
+          <div class="entry-row" data-id="${item.id}" data-type="aesthetic">
+            <div class="field">
+              <input type="text" value="${escapeHtml(item.name)}" placeholder="Название" data-field="name">
+            </div>
+            <div class="field">
+              <input type="text" value="${escapeHtml(item.description)}" placeholder="Краткое описание" data-field="description" class="desc-input">
+            </div>
+            <div class="field">
+              <label>Формат</label>
+              <select data-field="format">
+                <option value="Публикация" ${item.format === 'Публикация' ? 'selected' : ''}>Публикация</option>
+                <option value="Карусель" ${item.format === 'Карусель' ? 'selected' : ''}>Карусель</option>
+                <option value="Reals" ${item.format === 'Reals' ? 'selected' : ''}>Reals</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Дата</label>
+              <input type="date" value="${item.date || ''}" data-field="date">
+            </div>
+            <div class="field checkbox-field">
+              <input type="checkbox" ${item.published ? 'checked' : ''} data-field="published">
+              <label>Опубликовано</label>
+            </div>
+            <button class="delete-btn" data-action="delete" title="Удалить">✕</button>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    // ----- 4. Мини вопрос-ответ -----
+    function renderQA() {
+      const container = document.getElementById('qa-list');
+      if (data.qa.length === 0) {
+        container.innerHTML = '<div class="empty-message">Нет вопросов-ответов.</div>';
+        return;
+      }
+      let html = '';
+      data.qa.forEach(item => {
+        html += `
+          <div class="entry-row" data-id="${item.id}" data-type="qa">
+            <div class="field">
+              <input type="text" value="${escapeHtml(item.name)}" placeholder="Название" data-field="name">
+            </div>
+            <div class="field">
+              <input type="text" value="${escapeHtml(item.description)}" placeholder="Краткое описание" data-field="description" class="desc-input">
+            </div>
+            <div class="field">
+              <label>Формат</label>
+              <select data-field="format">
+                <option value="Публикация" ${item.format === 'Публикация' ? 'selected' : ''}>Публикация</option>
+                <option value="Карусель" ${item.format === 'Карусель' ? 'selected' : ''}>Карусель</option>
+                <option value="Reals" ${item.format === 'Reals' ? 'selected' : ''}>Reals</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Дата</label>
+              <input type="date" value="${item.date || ''}" data-field="date">
+            </div>
+            <div class="field checkbox-field">
+              <input type="checkbox" ${item.published ? 'checked' : ''} data-field="published">
+              <label>Опубликовано</label>
+            </div>
+            <button class="delete-btn" data-action="delete" title="Удалить">✕</button>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    // ----- 5. Хэштеги -----
+    function renderHashtags() {
+      const container = document.getElementById('hashtag-container');
+      let html = '';
+      data.hashtags.forEach((set, index) => {
+        html += `
+          <div class="hashtag-set" data-id="${set.id}">
+            <div class="tags">${escapeHtml(set.tags)}</div>
+            <div class="date-field">
+              <label>Последнее использование:</label>
+              <input type="date" value="${set.lastUsed || ''}" data-hashtag-id="${set.id}" data-field="lastUsed">
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    // ----- Обработчики событий (делегирование) -----
+    function handleInputChange(e) {
+      const target = e.target;
+      const row = target.closest('.entry-row');
+      if (!row) return;
+      const id = row.dataset.id;
+      const type = row.dataset.type;
+      if (!id || !type) return;
+
+      const field = target.dataset.field;
+      let value = target.type === 'checkbox' ? target.checked : target.value;
+
+      // найти элемент в данных
+      let item = data[type]?.find(el => el.id === id);
+      if (!item) return;
+
+      if (field === 'name' || field === 'description' || field === 'format' || field === 'date' || field === 'published') {
+        if (field === 'published') {
+          item.published = value;
+        } else {
+          item[field] = value;
+        }
+        // если это сорт и поле name, или published, то перерисовываем сорта для обновления класса
+        if (type === 'sort' && (field === 'name' || field === 'published')) {
+          renderSorts();
+        } else {
+          saveData();
+        }
+      }
+    }
+
+    function handleDelete(e) {
+      const target = e.target;
+      if (target.dataset.action !== 'delete') return;
+      const row = target.closest('.entry-row');
+      if (!row) return;
+      const id = row.dataset.id;
+      const type = row.dataset.type;
+      if (!id || !type) return;
+      if (!confirm(`Удалить этот элемент?`)) return;
+
+      data[type] = data[type].filter(el => el.id !== id);
+      renderAll();
+    }
+
+    function handleHashtagChange(e) {
+      const target = e.target;
+      if (target.dataset.field === 'lastUsed') {
+        const id = target.dataset.hashtagId;
+        const set = data.hashtags.find(h => h.id == id);
+        if (set) {
+          set.lastUsed = target.value;
+          saveData();
+        }
+      }
+    }
+
+    // ----- Добавление новых записей -----
+    function addSort() {
+      data.sorts.push({
+        id: generateId(),
+        name: '',
+        format: 'Публикация',
+        date: '',
+        published: false
+      });
+      renderSorts();
+      saveData();
+    }
+
+    function addInfo() {
+      data.info.push({
+        id: generateId(),
+        name: '',
+        description: '',
+        date: '',
+        published: false
+      });
+      renderInfo();
+      saveData();
+    }
+
+    function addAesthetic() {
+      data.aesthetic.push({
+        id: generateId(),
+        name: '',
+        description: '',
+        format: 'Публикация',
+        date: '',
+        published: false
+      });
+      renderAesthetic();
+      saveData();
+    }
+
+    function addQA() {
+      data.qa.push({
+        id: generateId(),
+        name: '',
+        description: '',
+        format: 'Публикация',
+        date: '',
+        published: false
+      });
+      renderQA();
+      saveData();
+    }
+
+    // ----- Вспомогательная функция для экранирования -----
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // ----- Инициализация событий -----
+    document.addEventListener('DOMContentLoaded', function() {
+      renderAll();
+
+      // делегирование изменений в полях ввода
+      document.querySelectorAll('.entry-list').forEach(list => {
+        list.addEventListener('change', handleInputChange);
+        list.addEventListener('input', handleInputChange); // для text inputs
+        list.addEventListener('click', handleDelete);
+      });
+
+      // хэштеги
+      document.getElementById('hashtag-container').addEventListener('change', handleHashtagChange);
+
+      // кнопки добавления
+      document.getElementById('add-sort-btn').addEventListener('click', addSort);
+      document.getElementById('add-info-btn').addEventListener('click', addInfo);
+      document.getElementById('add-aesthetic-btn').addEventListener('click', addAesthetic);
+      document.getElementById('add-qa-btn').addEventListener('click', addQA);
+    });
+
+  })();
+</script>
+</body>
+</html>
