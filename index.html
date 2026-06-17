@@ -416,7 +416,7 @@
       return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    // ----- Синхронизация всех данных из DOM в data -----
+    // ----- Синхронизация всех данных из DOM в data (используется при добавлении) -----
     function syncAllFromDOM() {
       // Сорта
       document.querySelectorAll('#sort-list .entry-row').forEach(row => {
@@ -654,7 +654,7 @@
     }
 
     function handleDelete(e) {
-      const deleteBtn = e.target.closest('.delete-btn');
+      const deleteBtn = e.target.closest('[data-action="delete"]');
       if (!deleteBtn) return;
       const row = deleteBtn.closest('.entry-row');
       if (!row) return;
@@ -662,10 +662,11 @@
       const type = row.dataset.type;
       if (!id || !type) return;
 
-      // Синхронизируем перед удалением
-      syncAllFromDOM();
-      data[type] = data[type].filter(el => el.id !== id);
-      renderAll();
+      // Удаляем напрямую, без синхронизации
+      if (data[type]) {
+        data[type] = data[type].filter(el => el.id !== id);
+        renderAll();
+      }
     }
 
     function handleHashtagChange(e) {
