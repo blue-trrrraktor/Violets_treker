@@ -150,6 +150,11 @@
       min-width: 100px;
     }
 
+    .entry-row select,
+    .entry-row select option {
+      color: #3a2a3a; /* единый цвет для всех опций */
+    }
+
     .entry-row input[type="text"]:focus,
     .entry-row input[type="date"]:focus,
     .entry-row select:focus {
@@ -198,11 +203,6 @@
     .entry-row .delete-btn:hover {
       color: #b06080;
       transform: scale(1.2);
-    }
-
-    .entry-row.published .sort-name {
-      color: #d4c4d4 !important;
-      transition: color 0.2s;
     }
 
     .entry-row .sort-name {
@@ -472,9 +472,8 @@
       }
       let html = '';
       data.sorts.forEach(item => {
-        const publishedClass = item.published ? 'published' : '';
         html += `
-          <div class="entry-row ${publishedClass}" data-id="${item.id}" data-type="sort">
+          <div class="entry-row" data-id="${item.id}" data-type="sort">
             <div class="field">
               <input type="text" class="sort-name" value="${escapeHtml(item.name)}" placeholder="Название сорта" data-field="name">
             </div>
@@ -651,24 +650,19 @@
       if (field === 'name' || field === 'description' || field === 'format' || field === 'date' || field === 'published') {
         item[field] = value;
         saveData();
-        // если это сорт и поле published, меняем класс строки
-        if (type === 'sort' && field === 'published') {
-          row.classList.toggle('published', value);
-        }
       }
     }
 
     function handleDelete(e) {
-      const target = e.target;
-      if (target.dataset.action !== 'delete') return;
-      const row = target.closest('.entry-row');
+      const deleteBtn = e.target.closest('.delete-btn');
+      if (!deleteBtn) return;
+      const row = deleteBtn.closest('.entry-row');
       if (!row) return;
       const id = row.dataset.id;
       const type = row.dataset.type;
       if (!id || !type) return;
-      if (!confirm(`Удалить этот элемент?`)) return;
 
-      // Синхронизируем все данные перед удалением
+      // Синхронизируем перед удалением
       syncAllFromDOM();
       data[type] = data[type].filter(el => el.id !== id);
       renderAll();
