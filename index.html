@@ -152,7 +152,7 @@
 
     .entry-row select,
     .entry-row select option {
-      color: #3a2a3a; /* единый цвет для всех опций */
+      color: #3a2a3a;
     }
 
     .entry-row input[type="text"]:focus,
@@ -416,7 +416,7 @@
       return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    // ----- Синхронизация всех данных из DOM в data (используется при добавлении) -----
+    // Синхронизация данных из DOM (используется при добавлении)
     function syncAllFromDOM() {
       // Сорта
       document.querySelectorAll('#sort-list .entry-row').forEach(row => {
@@ -463,7 +463,7 @@
       saveData();
     }
 
-    // ----- Рендеринг -----
+    // Рендеринг
     function renderSorts() {
       const container = document.getElementById('sort-list');
       if (data.sorts.length === 0) {
@@ -473,7 +473,7 @@
       let html = '';
       data.sorts.forEach(item => {
         html += `
-          <div class="entry-row" data-id="${item.id}" data-type="sort">
+          <div class="entry-row" data-id="${item.id}" data-type="sorts">
             <div class="field">
               <input type="text" class="sort-name" value="${escapeHtml(item.name)}" placeholder="Название сорта" data-field="name">
             </div>
@@ -635,7 +635,7 @@
       saveData();
     }
 
-    // ----- Обработчики -----
+    // Обработчики
     function handleInputChange(e) {
       const target = e.target;
       const row = target.closest('.entry-row');
@@ -662,7 +662,6 @@
       const type = row.dataset.type;
       if (!id || !type) return;
 
-      // Удаляем напрямую, без синхронизации
       if (data[type]) {
         data[type] = data[type].filter(el => el.id !== id);
         renderAll();
@@ -681,7 +680,7 @@
       }
     }
 
-    // ----- Добавление -----
+    // Добавление
     function addSort() {
       syncAllFromDOM();
       data.sorts.push({
@@ -732,7 +731,7 @@
       renderAll();
     }
 
-    // ----- Инициализация -----
+    // Инициализация
     document.addEventListener('DOMContentLoaded', function() {
       renderAll();
 
