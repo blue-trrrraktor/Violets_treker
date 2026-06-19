@@ -622,6 +622,12 @@
       font-weight: 600;
       color: #4a3a4a;
     }
+    .posts-sidebar .post-item .post-title .archived-badge {
+      font-size: 0.75rem;
+      color: #b0a0b0;
+      font-weight: 400;
+      margin-left: 6px;
+    }
     .posts-sidebar .post-item .post-meta {
       font-size: 0.8rem;
       color: #6a4a6a;
@@ -1377,7 +1383,7 @@
       if (e.target === this) closeArchiveModal();
     });
 
-    // ======== Модальное окно календаря ========
+    // ======== Модальное окно календаря (с архивными постами) ========
     let currentMonth = new Date().getMonth();
     let currentYear = new Date().getFullYear();
     let selectedDate = null;
@@ -1397,9 +1403,19 @@
       const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
       monthYear.textContent = `${monthNames[month]} ${year}`;
 
-      const allPosts = [...data.info, ...data.aesthetic, ...data.qa];
+      // Собираем все посты с флагом isArchived
+      const allPostsWithFlag = [
+        ...data.info.map(p => ({ ...p, isArchived: false })),
+        ...data.aesthetic.map(p => ({ ...p, isArchived: false })),
+        ...data.qa.map(p => ({ ...p, isArchived: false })),
+        ...data.archivedInfo.map(p => ({ ...p, isArchived: true })),
+        ...data.archivedAesthetic.map(p => ({ ...p, isArchived: true })),
+        ...data.archivedQA.map(p => ({ ...p, isArchived: true }))
+      ];
+
+      // Группируем по дате
       const postsByDate = {};
-      allPosts.forEach(post => {
+      allPostsWithFlag.forEach(post => {
         if (post.date) {
           if (!postsByDate[post.date]) postsByDate[post.date] = [];
           postsByDate[post.date].push(post);
@@ -1442,16 +1458,17 @@
           selectedDate = date;
           grid.querySelectorAll('.day').forEach(el => el.classList.remove('selected'));
           this.classList.add('selected');
-          showPostsForDate(date);
+          showPostsForDate(date, postsByDate);
         });
       });
 
+      // Если есть выбранная дата, показываем её посты, иначе — сегодня
       if (selectedDate && postsByDate[selectedDate]) {
-        showPostsForDate(selectedDate);
+        showPostsForDate(selectedDate, postsByDate);
       } else {
         if (postsByDate[todayStr]) {
           selectedDate = todayStr;
-          showPostsForDate(todayStr);
+          showPostsForDate(todayStr, postsByDate);
           grid.querySelectorAll('.day').forEach(el => {
             if (el.dataset.date === todayStr) el.classList.add('selected');
           });
@@ -1461,10 +1478,9 @@
       }
     }
 
-    function showPostsForDate(dateStr) {
+    function showPostsForDate(dateStr, postsByDate) {
       const container = document.getElementById('posts-list');
-      const allPosts = [...data.info, ...data.aesthetic, ...data.qa];
-      const posts = allPosts.filter(p => p.date === dateStr);
+      const posts = postsByDate[dateStr] || [];
       if (posts.length === 0) {
         container.innerHTML = `<div class="empty-posts">Нет постов на эту дату</div>`;
         return;
@@ -1472,14 +1488,22 @@
       let html = '';
       posts.forEach(post => {
         let typeLabel = '';
-        if (data.info.includes(post)) typeLabel = '📄 Инфо';
-        else if (data.aesthetic.includes(post)) typeLabel = '🎨 Эстетика';
-        else if (data.qa.includes(post)) typeLabel = '❓ В-О';
+        // Определяем тип по наличию в массивах (можно упростить, но оставим для ясности)
+        if (!post.isArchived) {
+          if (data.info.includes(post)) typeLabel = '📄 Инфо';
+          else if (data.aesthetic.includes(post)) typeLabel = '🎨 Эстетика';
+          else if (data.qa.includes(post)) typeLabel = '❓ В-О';
+        } else {
+          if (data.archivedInfo.includes(post)) typeLabel = '📄 Инфо (архив)';
+          else if (data.archivedAesthetic.includes(post)) typeLabel = '🎨 Эстетика (архив)';
+          else if (data.archivedQA.includes(post)) typeLabel = '❓ В-О (архив)';
+        }
         const format = post.format || '—';
         const published = post.published ? '✅' : '❌';
+        const archiveBadge = post.isArchived ? '<span class="archived-badge">(архив)</span>' : '';
         html += `
           <div class="post-item">
-            <div class="post-title">${escapeHtml(post.name) || 'Без названия'}</div>
+            <div class="post-title">${escapeHtml(post.name) || 'Без названия'} ${archiveBadge}</div>
             <div class="post-meta">${typeLabel} | Формат: ${format} | Опубликовано: ${published}</div>
           </div>
         `;
