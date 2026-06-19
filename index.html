@@ -74,7 +74,7 @@
     .add-btn:active { transform: scale(0.96); }
     .entry-list { display: flex; flex-direction: column; gap: 12px; }
 
-    /* Стили для сортов (аккордеон) — без изменений */
+    /* Стили для сортов (аккордеон) */
     .sort-card {
       background: rgba(255,252,255,0.6);
       border-radius: 18px;
@@ -819,13 +819,12 @@
   (function() {
     // ========== ВСТАВЬТЕ ВАШУ КОНФИГУРАЦИЮ FIREBASE ==========
     const firebaseConfig = {
-      apiKey: "AIzaSyA5MMiGc44Ey1ANK-JlQ1lQlBHeCB3AayY",
-      authDomain: "violet-tracker.firebaseapp.com",
-      projectId: "violet-tracker",
-      storageBucket: "violet-tracker.firebasestorage.app",
-      messagingSenderId: "917454225342",
-      appId: "1:917454225342:web:8aef3793cfcc478725c3ef",
-      measurementId: "G-BYYL9PBCN7"
+      apiKey: "AIzaSy...",
+      authDomain: "your-project.firebaseapp.com",
+      projectId: "your-project-id",
+      storageBucket: "your-project.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "1:123456789:web:abcdef"
     };
     // =========================================================
 
@@ -908,7 +907,7 @@
     }
 
     // ======== Рендеринг ========
-    // Сорта (аккордеон) — без изменений
+    // Сорта (аккордеон) – добавлен data-action="delete" к кнопке
     function renderSorts() {
       const container = document.getElementById('sort-list');
       if (data.sorts.length === 0) {
@@ -1280,6 +1279,22 @@
       const target = e.target.closest('button[data-action]');
       if (!target) return;
       const action = target.dataset.action;
+
+      // Проверяем, не находится ли кнопка внутри карточки сорта
+      const sortCard = target.closest('.sort-card');
+      if (sortCard) {
+        if (action === 'delete') {
+          const id = sortCard.dataset.id;
+          if (id) {
+            data.sorts = data.sorts.filter(el => el.id !== id);
+            renderAll();
+            if (firebaseReady && auth && auth.currentUser) saveToFirestore().catch(() => {});
+          }
+        }
+        return;
+      }
+
+      // Обычные посты
       const row = target.closest('.entry-row');
       if (!row) return;
       const id = row.dataset.id;
@@ -1383,7 +1398,7 @@
       if (e.target === this) closeArchiveModal();
     });
 
-    // ======== Модальное окно календаря (с архивными постами) ========
+    // ======== Модальное окно календаря (с сортами) ========
     let currentMonth = new Date().getMonth();
     let currentYear = new Date().getFullYear();
     let selectedDate = null;
@@ -1403,19 +1418,19 @@
       const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
       monthYear.textContent = `${monthNames[month]} ${year}`;
 
-      // Собираем все посты с флагом isArchived
-      const allPostsWithFlag = [
-        ...data.info.map(p => ({ ...p, isArchived: false })),
-        ...data.aesthetic.map(p => ({ ...p, isArchived: false })),
-        ...data.qa.map(p => ({ ...p, isArchived: false })),
-        ...data.archivedInfo.map(p => ({ ...p, isArchived: true })),
-        ...data.archivedAesthetic.map(p => ({ ...p, isArchived: true })),
-        ...data.archivedQA.map(p => ({ ...p, isArchived: true }))
+      // Собираем все посты, включая сорта, с флагом isArchived = false для сортов
+      const allPosts = [
+        ...data.sorts.map(p => ({ ...p, isArchived: false, isSort: true })),
+        ...data.info.map(p => ({ ...p, isArchived: false, isSort: false })),
+        ...data.aesthetic.map(p => ({ ...p, isArchived: false, isSort: false })),
+        ...data.qa.map(p => ({ ...p, isArchived: false, isSort: false })),
+        ...data.archivedInfo.map(p => ({ ...p, isArchived: true, isSort: false })),
+        ...data.archivedAesthetic.map(p => ({ ...p, isArchived: true, isSort: false })),
+        ...data.archivedQA.map(p => ({ ...p, isArchived: true, isSort: false }))
       ];
 
-      // Группируем по дате
       const postsByDate = {};
-      allPostsWithFlag.forEach(post => {
+      allPosts.forEach(post => {
         if (post.date) {
           if (!postsByDate[post.date]) postsByDate[post.date] = [];
           postsByDate[post.date].push(post);
@@ -1462,7 +1477,6 @@
         });
       });
 
-      // Если есть выбранная дата, показываем её посты, иначе — сегодня
       if (selectedDate && postsByDate[selectedDate]) {
         showPostsForDate(selectedDate, postsByDate);
       } else {
@@ -1488,15 +1502,16 @@
       let html = '';
       posts.forEach(post => {
         let typeLabel = '';
-        // Определяем тип по наличию в массивах (можно упростить, но оставим для ясности)
-        if (!post.isArchived) {
-          if (data.info.includes(post)) typeLabel = '📄 Инфо';
-          else if (data.aesthetic.includes(post)) typeLabel = '🎨 Эстетика';
-          else if (data.qa.includes(post)) typeLabel = '❓ В-О';
-        } else {
+        if (post.isSort) {
+          typeLabel = '🌱 Сорт';
+        } else if (post.isArchived) {
           if (data.archivedInfo.includes(post)) typeLabel = '📄 Инфо (архив)';
           else if (data.archivedAesthetic.includes(post)) typeLabel = '🎨 Эстетика (архив)';
           else if (data.archivedQA.includes(post)) typeLabel = '❓ В-О (архив)';
+        } else {
+          if (data.info.includes(post)) typeLabel = '📄 Инфо';
+          else if (data.aesthetic.includes(post)) typeLabel = '🎨 Эстетика';
+          else if (data.qa.includes(post)) typeLabel = '❓ В-О';
         }
         const format = post.format || '—';
         const published = post.published ? '✅' : '❌';
