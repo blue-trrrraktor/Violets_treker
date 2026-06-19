@@ -6,6 +6,7 @@
   <title>Трекер фиалок 🌸</title>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    /* === Базовые стили (такие же, как в прошлой версии, добавлены стили для календаря) === */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Quicksand', sans-serif;
@@ -74,7 +75,7 @@
     .add-btn:active { transform: scale(0.96); }
     .entry-list { display: flex; flex-direction: column; gap: 12px; }
 
-    /* Аккордеон для сортов (оставляем как есть) */
+    /* Стили для сортов (аккордеон) — без изменений */
     .sort-card {
       background: rgba(255,252,255,0.6);
       border-radius: 18px;
@@ -202,7 +203,7 @@
     .sort-card-body .delete-btn:active { transform: scale(1.2); }
     .sort-card-body .delete-btn:hover { color: #b06080; }
 
-    /* Обычные записи (не сорта) */
+    /* Стили для обычных постов (с кнопками архивации и удаления) */
     .entry-row {
       display: flex;
       flex-direction: column;
@@ -390,7 +391,7 @@
     .sync-status .error { color: #c0392b; }
     .sync-status .success { color: #27ae60; }
 
-    /* Модальное окно */
+    /* ===== Модальное окно календаря ===== */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -406,7 +407,7 @@
     .modal {
       background: #faf5fa;
       border-radius: 28px;
-      max-width: 700px;
+      max-width: 900px;
       width: 100%;
       max-height: 85vh;
       display: flex;
@@ -437,86 +438,121 @@
       transition: transform 0.2s;
     }
     .modal-close:hover { transform: rotate(90deg); }
-    .modal-tabs {
+    .modal-body {
       display: flex;
-      border-bottom: 1px solid rgba(210,180,210,0.2);
-      background: rgba(255,248,255,0.3);
-      overflow-x: auto;
-      flex-shrink: 0;
+      flex: 1;
+      overflow: hidden;
+      flex-wrap: wrap;
     }
-    .modal-tab {
-      padding: 12px 20px;
-      font-weight: 600;
+    .calendar-wrapper {
+      flex: 2;
+      min-width: 300px;
+      padding: 20px 24px;
+      overflow-y: auto;
+    }
+    .calendar-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .calendar-nav button {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
       color: #6a4a6a;
       cursor: pointer;
-      border-bottom: 3px solid transparent;
-      transition: border-color 0.2s, background 0.2s;
-      white-space: nowrap;
-      background: none;
-      border-top: none;
-      border-left: none;
-      border-right: none;
-      font-family: 'Quicksand', sans-serif;
-      font-size: 0.95rem;
+      padding: 0 10px;
+      transition: transform 0.2s;
     }
-    .modal-tab:hover { background: rgba(255,245,250,0.4); }
-    .modal-tab.active { border-bottom-color: #b89ab8; background: rgba(255,245,250,0.3); }
-    .modal-content {
+    .calendar-nav button:active { transform: scale(0.9); }
+    .calendar-nav .month-year {
+      font-weight: 600;
+      font-size: 1.2rem;
+      color: #4a3a4a;
+    }
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      text-align: center;
+    }
+    .calendar-grid .day-name {
+      font-weight: 600;
+      font-size: 0.8rem;
+      color: #6a4a6a;
+      padding: 6px 0;
+    }
+    .calendar-grid .day {
+      padding: 8px 4px;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      font-size: 0.9rem;
+      color: #4a3a4a;
+      background: transparent;
+    }
+    .calendar-grid .day:hover { background: rgba(210,180,210,0.2); }
+    .calendar-grid .day.has-posts {
+      font-weight: 600;
+      background: #e7d4e7;
+      color: #4a2a4a;
+    }
+    .calendar-grid .day.selected {
+      background: #b89ab8;
+      color: white;
+    }
+    .calendar-grid .day.other-month {
+      color: #c0b0c0;
+    }
+    .calendar-grid .day.today {
+      border: 2px solid #b89ab8;
+    }
+
+    .posts-sidebar {
       flex: 1;
-      overflow-y: auto;
+      min-width: 200px;
+      background: rgba(255,248,255,0.3);
+      border-left: 1px solid rgba(210,180,210,0.15);
       padding: 20px 24px;
+      overflow-y: auto;
     }
-    .modal-content .archive-item {
+    .posts-sidebar h3 {
+      font-weight: 600;
+      font-size: 1rem;
+      color: #6a4a6a;
+      margin-bottom: 12px;
+    }
+    .posts-sidebar .post-item {
       background: rgba(255,252,255,0.6);
       border-radius: 18px;
-      padding: 14px 16px;
-      margin-bottom: 12px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
       border: 1px solid rgba(210,180,210,0.15);
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px 12px;
     }
-    .modal-content .archive-item .info {
-      flex: 1;
-      min-width: 150px;
-    }
-    .modal-content .archive-item .info .title {
+    .posts-sidebar .post-item .post-title {
       font-weight: 600;
       color: #4a3a4a;
     }
-    .modal-content .archive-item .info .desc {
-      font-size: 0.85rem;
+    .posts-sidebar .post-item .post-meta {
+      font-size: 0.8rem;
       color: #6a4a6a;
       opacity: 0.8;
     }
-    .modal-content .archive-item .info .meta {
-      font-size: 0.8rem;
-      color: #8a7a8a;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px 12px;
-      margin-top: 2px;
-    }
-    .modal-content .archive-item .restore-btn {
-      background: #d9c4d9;
-      border: none;
-      padding: 6px 16px;
-      border-radius: 30px;
-      font-family: 'Quicksand', sans-serif;
-      font-weight: 600;
-      font-size: 0.85rem;
-      color: #4a2a4a;
-      cursor: pointer;
-      transition: background 0.2s;
-      touch-action: manipulation;
-    }
-    .modal-content .archive-item .restore-btn:active { transform: scale(0.96); }
-    .modal-content .empty-archive {
+    .posts-sidebar .empty-posts {
       color: #b09ab0;
       font-style: italic;
-      padding: 20px 0;
-      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 700px) {
+      .modal-body { flex-direction: column; }
+      .posts-sidebar {
+        border-left: none;
+        border-top: 1px solid rgba(210,180,210,0.15);
+        max-height: 200px;
+      }
+      .calendar-wrapper { padding: 16px; }
     }
 
     @media (max-width: 600px) {
@@ -552,8 +588,10 @@
       .tools button { flex: 1 1 100%; text-align: center; padding: 14px; }
       .modal { max-height: 90vh; }
       .modal-header { padding: 14px 16px; }
-      .modal-content { padding: 16px; }
-      .modal-tab { padding: 10px 14px; font-size: 0.85rem; }
+      .modal-body { flex-direction: column; }
+      .posts-sidebar { border-left: none; border-top: 1px solid rgba(210,180,210,0.15); max-height: 200px; padding: 16px; }
+      .calendar-wrapper { padding: 16px; }
+      .calendar-grid .day { font-size: 0.8rem; padding: 6px 2px; }
       .entry-row .action-buttons { justify-content: flex-start; }
     }
     .section:nth-child(1) .section-title { color: #7a5a7a; }
@@ -575,6 +613,7 @@
     <button id="sync-pull-btn">⬇️ Загрузить из облака</button>
     <button id="sync-push-btn">⬆️ Сохранить в облако</button>
     <button id="archive-btn">📦 Архив постов</button>
+    <button id="calendar-btn">📅 Календарь</button>
     <input type="file" id="file-input" accept=".json">
   </div>
 
@@ -636,7 +675,7 @@
   <div class="modal">
     <div class="modal-header">
       <h2>📦 Архив постов</h2>
-      <button class="modal-close" id="modal-close-btn">✕</button>
+      <button class="modal-close" id="archive-modal-close">✕</button>
     </div>
     <div class="modal-tabs" id="modal-tabs">
       <button class="modal-tab active" data-tab="info">Информативные</button>
@@ -645,6 +684,34 @@
     </div>
     <div class="modal-content" id="modal-content">
       <!-- динамически заполняется -->
+    </div>
+  </div>
+</div>
+
+<!-- Модальное окно календаря -->
+<div class="modal-overlay" id="calendar-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>📅 Календарь постов</h2>
+      <button class="modal-close" id="calendar-modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="calendar-wrapper">
+        <div class="calendar-nav">
+          <button id="prev-month">◀</button>
+          <span class="month-year" id="month-year">Январь 2025</span>
+          <button id="next-month">▶</button>
+        </div>
+        <div class="calendar-grid" id="calendar-grid">
+          <!-- дни генерируются JS -->
+        </div>
+      </div>
+      <div class="posts-sidebar" id="posts-sidebar">
+        <h3>Посты на дату</h3>
+        <div id="posts-list">
+          <div class="empty-posts">Выберите день в календаре</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -658,13 +725,12 @@
   (function() {
     // ========== ВСТАВЬТЕ ВАШУ КОНФИГУРАЦИЮ FIREBASE ==========
     const firebaseConfig = {
-      apiKey: "AIzaSyA5MMiGc44Ey1ANK-JlQ1lQlBHeCB3AayY",
-      authDomain: "violet-tracker.firebaseapp.com",
-      projectId: "violet-tracker",
-      storageBucket: "violet-tracker.firebasestorage.app",
-      messagingSenderId: "917454225342",
-      appId: "1:917454225342:web:8aef3793cfcc478725c3ef",
-      measurementId: "G-BYYL9PBCN7"
+      apiKey: "AIzaSy...",
+      authDomain: "your-project.firebaseapp.com",
+      projectId: "your-project-id",
+      storageBucket: "your-project.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "1:123456789:web:abcdef"
     };
     // =========================================================
 
@@ -714,7 +780,6 @@
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
-          // Проверяем наличие архивных полей
           if (!parsed.archivedInfo) parsed.archivedInfo = [];
           if (!parsed.archivedAesthetic) parsed.archivedAesthetic = [];
           if (!parsed.archivedQA) parsed.archivedQA = [];
@@ -823,7 +888,6 @@
       }
       let html = '';
       dataArray.forEach(item => {
-        // формируем поля в зависимости от типа
         let fieldsHtml = '';
         if (type === 'info') {
           fieldsHtml = `
@@ -965,7 +1029,6 @@
 
     // ======== Архивация и разархивация ========
     function archivePost(id, type) {
-      // type может быть 'info', 'aesthetic', 'qa'
       const sourceMap = { info: 'info', aesthetic: 'aesthetic', qa: 'qa' };
       const destMap = { info: 'archivedInfo', aesthetic: 'archivedAesthetic', qa: 'archivedQA' };
       const sourceKey = sourceMap[type];
@@ -1027,7 +1090,6 @@
           if (doc.exists) {
             const remoteData = doc.data().data;
             if (remoteData) {
-              // Проверяем наличие архивных полей
               if (!remoteData.archivedInfo) remoteData.archivedInfo = [];
               if (!remoteData.archivedAesthetic) remoteData.archivedAesthetic = [];
               if (!remoteData.archivedQA) remoteData.archivedQA = [];
@@ -1074,7 +1136,6 @@
     // ======== Обработчики событий ========
     function handleInputChange(e) {
       const target = e.target;
-      // Проверяем карточку сорта
       const sortCard = target.closest('.sort-card');
       if (sortCard) {
         const id = sortCard.dataset.id;
@@ -1085,7 +1146,6 @@
         if (field === 'name' || field === 'format' || field === 'date' || field === 'published') {
           item[field] = value;
           saveLocalData();
-          // Обновляем заголовок
           updateSortCardHeader(sortCard, item);
           if (firebaseReady && auth && auth.currentUser) saveToFirestore().catch(() => {});
         }
@@ -1093,7 +1153,6 @@
         return;
       }
 
-      // Обычные посты
       const row = target.closest('.entry-row');
       if (!row) return;
       const id = row.dataset.id;
@@ -1133,14 +1192,12 @@
       if (!id || !type) return;
 
       if (action === 'delete') {
-        // Удаление
         if (data[type]) {
           data[type] = data[type].filter(el => el.id !== id);
           renderAll();
           if (firebaseReady && auth && auth.currentUser) saveToFirestore().catch(() => {});
         }
       } else if (action === 'archive') {
-        // Архивация
         archivePost(id, type);
       }
     }
@@ -1162,7 +1219,7 @@
     function openArchiveModal() {
       const modal = document.getElementById('archive-modal');
       modal.classList.add('active');
-      renderArchiveTab('info'); // по умолчанию первая вкладка
+      renderArchiveTab('info');
     }
 
     function closeArchiveModal() {
@@ -1175,11 +1232,6 @@
         info: data.archivedInfo || [],
         aesthetic: data.archivedAesthetic || [],
         qa: data.archivedQA || []
-      };
-      const titleMap = {
-        info: 'Информативные посты',
-        aesthetic: 'Эстетичный контент',
-        qa: 'Мини вопрос-ответ'
       };
       const items = archiveMap[tabType] || [];
       if (items.length === 0) {
@@ -1207,7 +1259,6 @@
       });
       content.innerHTML = html;
 
-      // Обработчики для кнопок "Вернуть"
       content.querySelectorAll('.restore-btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
           const archiveItem = this.closest('.archive-item');
@@ -1215,28 +1266,161 @@
           const type = archiveItem.dataset.type;
           if (id && type) {
             restorePost(id, type);
-            // Перерисовываем текущую вкладку
             renderArchiveTab(tabType);
           }
         });
       });
     }
 
-    // Переключение вкладок
+    // Переключение вкладок архива
     document.getElementById('modal-tabs').addEventListener('click', function(e) {
       const tabBtn = e.target.closest('.modal-tab');
       if (!tabBtn) return;
-      // Убираем активный класс у всех вкладок
       this.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
       tabBtn.classList.add('active');
       const tabType = tabBtn.dataset.tab;
       renderArchiveTab(tabType);
     });
 
-    // Закрытие модалки
-    document.getElementById('modal-close-btn').addEventListener('click', closeArchiveModal);
+    document.getElementById('archive-modal-close').addEventListener('click', closeArchiveModal);
     document.getElementById('archive-modal').addEventListener('click', function(e) {
       if (e.target === this) closeArchiveModal();
+    });
+
+    // ======== Модальное окно календаря ========
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
+    let selectedDate = null; // строка 'YYYY-MM-DD'
+
+    function openCalendarModal() {
+      document.getElementById('calendar-modal').classList.add('active');
+      renderCalendar(currentMonth, currentYear);
+    }
+
+    function closeCalendarModal() {
+      document.getElementById('calendar-modal').classList.remove('active');
+    }
+
+    function renderCalendar(month, year) {
+      const grid = document.getElementById('calendar-grid');
+      const monthYear = document.getElementById('month-year');
+      const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+      monthYear.textContent = `${monthNames[month]} ${year}`;
+
+      // Получаем все посты с датами (активные, не из архива)
+      const allPosts = [...data.info, ...data.aesthetic, ...data.qa];
+      const postsByDate = {};
+      allPosts.forEach(post => {
+        if (post.date) {
+          if (!postsByDate[post.date]) postsByDate[post.date] = [];
+          postsByDate[post.date].push(post);
+        }
+      });
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const today = new Date();
+      const todayStr = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+
+      let html = '';
+      const dayNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+      dayNames.forEach(name => {
+        html += `<div class="day-name">${name}</div>`;
+      });
+
+      // Пустые ячейки до первого дня месяца (если первый день - воскресенье, то сдвиг 0)
+      let startOffset = firstDay === 0 ? 6 : firstDay - 1; // Понедельник = 0, Воскресенье = 6
+      for (let i = 0; i < startOffset; i++) {
+        html += `<div class="day other-month"></div>`;
+      }
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dateStr = year + '-' + String(month+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+        const hasPosts = postsByDate[dateStr] && postsByDate[dateStr].length > 0;
+        const isToday = dateStr === todayStr;
+        const isSelected = dateStr === selectedDate;
+        let classes = 'day';
+        if (hasPosts) classes += ' has-posts';
+        if (isToday) classes += ' today';
+        if (isSelected) classes += ' selected';
+        html += `<div class="${classes}" data-date="${dateStr}">${d}</div>`;
+      }
+
+      grid.innerHTML = html;
+
+      // Обработчики на дни
+      grid.querySelectorAll('.day[data-date]').forEach(dayEl => {
+        dayEl.addEventListener('click', function() {
+          const date = this.dataset.date;
+          selectedDate = date;
+          // Обновляем выделение
+          grid.querySelectorAll('.day').forEach(el => el.classList.remove('selected'));
+          this.classList.add('selected');
+          // Показываем посты на эту дату
+          showPostsForDate(date);
+        });
+      });
+
+      // Если есть выбранная дата, показываем её посты, иначе показываем посты на сегодня (если есть)
+      if (selectedDate && postsByDate[selectedDate]) {
+        showPostsForDate(selectedDate);
+      } else {
+        // Показываем посты на сегодня, если есть
+        if (postsByDate[todayStr]) {
+          selectedDate = todayStr;
+          showPostsForDate(todayStr);
+          // Подсветим сегодняшний день
+          grid.querySelectorAll('.day').forEach(el => {
+            if (el.dataset.date === todayStr) el.classList.add('selected');
+          });
+        } else {
+          // Если на сегодня нет постов, показываем пустоту
+          document.getElementById('posts-list').innerHTML = `<div class="empty-posts">Нет постов на выбранную дату</div>`;
+        }
+      }
+    }
+
+    function showPostsForDate(dateStr) {
+      const container = document.getElementById('posts-list');
+      const allPosts = [...data.info, ...data.aesthetic, ...data.qa];
+      const posts = allPosts.filter(p => p.date === dateStr);
+      if (posts.length === 0) {
+        container.innerHTML = `<div class="empty-posts">Нет постов на эту дату</div>`;
+        return;
+      }
+      let html = '';
+      posts.forEach(post => {
+        let typeLabel = '';
+        if (data.info.includes(post)) typeLabel = '📄 Инфо';
+        else if (data.aesthetic.includes(post)) typeLabel = '🎨 Эстетика';
+        else if (data.qa.includes(post)) typeLabel = '❓ В-О';
+        const format = post.format || '—';
+        const published = post.published ? '✅' : '❌';
+        html += `
+          <div class="post-item">
+            <div class="post-title">${escapeHtml(post.name) || 'Без названия'}</div>
+            <div class="post-meta">${typeLabel} | Формат: ${format} | Опубликовано: ${published}</div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    // Переключение месяцев
+    document.getElementById('prev-month').addEventListener('click', function() {
+      if (currentMonth === 0) { currentMonth = 11; currentYear--; }
+      else { currentMonth--; }
+      renderCalendar(currentMonth, currentYear);
+    });
+    document.getElementById('next-month').addEventListener('click', function() {
+      if (currentMonth === 11) { currentMonth = 0; currentYear++; }
+      else { currentMonth++; }
+      renderCalendar(currentMonth, currentYear);
+    });
+
+    document.getElementById('calendar-modal-close').addEventListener('click', closeCalendarModal);
+    document.getElementById('calendar-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeCalendarModal();
     });
 
     // ======== Добавление ========
@@ -1285,7 +1469,6 @@
       reader.onload = function(e) {
         try {
           const imported = JSON.parse(e.target.result);
-          // Проверяем наличие обязательных полей
           if (!imported.sorts || !imported.info || !imported.aesthetic || !imported.qa || !imported.hashtags) {
             alert('Неверный формат файла.');
             return;
@@ -1322,19 +1505,18 @@
       }
     });
     document.getElementById('archive-btn').addEventListener('click', openArchiveModal);
+    document.getElementById('calendar-btn').addEventListener('click', openCalendarModal);
 
     // ======== Инициализация ========
     document.addEventListener('DOMContentLoaded', function() {
       renderAll();
 
-      // События для всех списков
       document.querySelectorAll('#sort-list, #info-list, #aesthetic-list, #qa-list, #hashtag-container').forEach(container => {
         container.addEventListener('change', handleInputChange);
         container.addEventListener('input', handleInputChange);
         container.addEventListener('click', handleActionClick);
       });
 
-      // Для хэштегов отдельно
       document.getElementById('hashtag-container').addEventListener('change', handleHashtagChange);
 
       document.getElementById('add-sort-btn').addEventListener('click', addSort);
